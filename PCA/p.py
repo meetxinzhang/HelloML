@@ -52,6 +52,25 @@ def load_data(filename):
     return dataList
 
 
+def outPut(dataList, dim):
+    # 导入数据，切记不含因变量。我们在此构造df1数据，此数据变量间没有一定的相关性，只做计算演示。
+    df1 = np.array(dataList)
+
+    # # 去掉第一列因变量
+    # df1 = df1[:, 1:]
+
+    df1 = pd.DataFrame(df1)
+    datasTad = standardization(df1)
+    # 选取主成份
+    PCAX, pcaEigenVector = pcan(df1, datasTad, dim)
+
+    print('选取的特征向量：')
+    print(pcaEigenVector, end='\n')
+    print('降维后的数据：')
+    print(PCAX, end='\n')
+    return PCAX
+
+
 if __name__ == "__main__":
     # 导入数据，切记不含因变量。我们在此构造df1数据，此数据变量间没有一定的相关性，只做计算演示。
     df1 = np.array(load_data('train_data.txt'))

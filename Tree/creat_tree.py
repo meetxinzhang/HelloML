@@ -1,6 +1,6 @@
 from Tree.args_tree import *
 from Tree.predict_tree import *
-from sklearn.decomposition import PCA
+from PCA.p import *
 
 
 def create_tree(dataList, leafType, errType, opt=None):
@@ -47,16 +47,37 @@ def load_data(filename):
     return dataList
 
 
-
+# 载入数据----------------------------------------------------
+# 训练数据 16维
+print("训练数据：")
 train_data = load_data('train_data.txt')
+# 检验缺省值
+print(np.isnan(train_data).any())
+# 测试数据 15维
+print("测试数据：")
 test_data = load_data('test_data.txt')
+# 检验缺失值
+print(np.isnan(test_data).any())
 
-pca = PCA(n_components=15)
 
+# 预处理：使用 PCA 将数据变为线性无关-------------------------------------
+# 分割出自变量，因为PCA只处理自变量
+train_data = np.matrix(train_data)
+temp_X = train_data[:, 1:]
+
+pca_X = outPut(temp_X, 15)
+
+# 复原数据
+train_data[:, 1:] = pca_X
+train_data = train_data.tolist()
+
+
+# 建立模型树-----------------------------------------------------------
 tree = create_tree(train_data, leaf_faction, err_faction, opt={'err_tolerance': 1, 'n_tolerance': 901})
+print('树结构为：')
 print(tree)
 
-print('1111111111111111111111111111111111111111111111')
+# 使用模型树预测
+print('预测结果为：')
 yHat = createForeCast(tree, test_data, modelEval=modelTreeEval)
 print(yHat)
-
