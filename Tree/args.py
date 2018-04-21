@@ -16,7 +16,7 @@ def split_data(dataset, feat_idx, value):
     return left, right
 
 
-def choose_best_feature(dataList, leafType, errType, opt):
+def choose_best_feature(dataList, leaf_faction, err_faction, opt):
     """
     选取最佳分割特征和特征值
     :param dataList: 待划分的数据集
@@ -38,7 +38,7 @@ def choose_best_feature(dataList, leafType, errType, opt):
     #     return None, leafType(dataList)
 
 
-    err = errType(dataList)
+    err = err_faction(dataList)
     # 赋初始值
     best_feat_idx, best_feat_val, best_err = 0, 0, float('inf')
     # 遍历所有特征
@@ -55,7 +55,7 @@ def choose_best_feature(dataList, leafType, errType, opt):
                 continue
 
             # 计算误差
-            new_err = errType(left) + errType(right)
+            new_err = err_faction(left) + err_faction(right)
             if new_err < best_err:
                 best_feat_idx = feat_idx
                 best_feat_val = val
@@ -63,12 +63,12 @@ def choose_best_feature(dataList, leafType, errType, opt):
 
     # 如果误差变化并不大归为一类
     if abs(err - best_err) < err_tolerance:
-        return None, leafType(dataList)
+        return None, leaf_faction(dataList)
 
     # 检查分割样本量是不是太小
     ldata, rdata = split_data(dataList.tolist(), best_feat_idx, best_feat_val)
     if len(ldata) < n_tolerance or len(rdata) < n_tolerance:
-        return None, leafType(dataList)
+        return None, leaf_faction(dataList)
 
     return best_feat_idx, best_feat_val
 
@@ -109,7 +109,7 @@ def linear_regression(dataList):
     return w, X, y
 
 
-def leaf_faction(dataList):
+def leaf_lmTree(dataList):
     """
     计算给定数据集的线性回归系数
     :param dataList: 数据集
@@ -119,7 +119,7 @@ def leaf_faction(dataList):
     return w
 
 
-def err_faction(dataList):
+def err_lmTree(dataList):
     """
     对给定数据集进行回归并计算误差
     :param dataList: 数据集

@@ -1,7 +1,7 @@
 from numpy import *
 
 
-def modelTreeEval(model, inDat):
+def predict_lmTree(model, inDat):
     """
     预测，一行测试数据 * 回归系数
     对输入数据进行格式化处理，在原数据矩阵上增加第0列，元素的值都是1，
@@ -26,7 +26,7 @@ def modelTreeEval(model, inDat):
 # modelEval是对叶节点进行预测的函数引用，指定树的类型，以便在叶节点上调用合适的模型。
 # 此函数自顶向下遍历整棵树，直到命中叶节点为止，一旦到达叶节点，它就会在输入数据上
 # 调用modelEval()函数，该函数的默认值为regTreeEval()·
-def treeForeCast(tree, inData, modelEval=modelTreeEval):
+def recursion_tree(tree, inData, predictFacion=predict_lmTree):
     """
     Desc:
         遍历树
@@ -38,24 +38,24 @@ def treeForeCast(tree, inData, modelEval=modelTreeEval):
         返回预测值
     """
     if not isTree(tree):
-        return modelEval(tree, inData)
+        return predictFacion(tree, inData)
     # 书中写的是inData[tree['spInd']]，只适合inData只有一列的情况，否则会产生异常
     if inData[0, tree['feat_idx']] <= tree['feat_val']:
         # 可以把if-else去掉，只留if里面的分支
         if isTree(tree['left']):
-            return treeForeCast(tree['left'], inData, modelEval)
+            return recursion_tree(tree['left'], inData, predictFacion)
         else:
-            return modelEval(tree['left'], inData)
+            return predictFacion(tree['left'], inData)
     else:
         # 同上，可以把if-else去掉，只留if里面的分支
         if isTree(tree['right']):
-            return treeForeCast(tree['right'], inData, modelEval)
+            return recursion_tree(tree['right'], inData, predictFacion)
         else:
-            return modelEval(tree['right'], inData)
+            return predictFacion(tree['right'], inData)
 
 
 # 计算全部测试结果
-def createForeCast(tree, testData, modelEval=modelTreeEval):
+def predict_test_data(tree, testData, predictFacion=predict_lmTree):
     """
     Desc:
         调用 treeForeCast ，对特定模型的树进行预测，可以是 回归树 也可以是 模型树
@@ -70,7 +70,7 @@ def createForeCast(tree, testData, modelEval=modelTreeEval):
     yHat = mat(zeros((m, 1)))
     # print yHat
     for i in range(m):
-        yHat[i, 0] = treeForeCast(tree, mat(testData[i]), modelEval)
+        yHat[i, 0] = recursion_tree(tree, mat(testData[i]), predictFacion)
         # print "yHat==>", yHat[i, 0]
     return yHat
 
