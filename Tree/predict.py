@@ -26,7 +26,7 @@ def predict_lmTree(model, inDat):
 # modelEval是对叶节点进行预测的函数引用，指定树的类型，以便在叶节点上调用合适的模型。
 # 此函数自顶向下遍历整棵树，直到命中叶节点为止，一旦到达叶节点，它就会在输入数据上
 # 调用modelEval()函数，该函数的默认值为regTreeEval()·
-def recursion_tree(tree, inData, predictFacion=predict_lmTree):
+def recursion_tree(tree, inData, tree_type='regression'):
     """
     Desc:
         遍历树
@@ -37,25 +37,31 @@ def recursion_tree(tree, inData, predictFacion=predict_lmTree):
     Returns:
         返回预测值
     """
+    if tree_type == 'regression':
+        predict_faction = predict_lmTree
+    else:
+        predict_faction = predict_lmTree
+        # TODO
+
     if not isTree(tree):
-        return predictFacion(tree, inData)
+        return predict_faction(tree, inData)
     # 书中写的是inData[tree['spInd']]，只适合inData只有一列的情况，否则会产生异常
     if inData[0, tree['feat_idx']] <= tree['feat_val']:
         # 可以把if-else去掉，只留if里面的分支
         if isTree(tree['left']):
-            return recursion_tree(tree['left'], inData, predictFacion)
+            return recursion_tree(tree['left'], inData, tree_type)
         else:
-            return predictFacion(tree['left'], inData)
+            return predict_faction(tree['left'], inData)
     else:
         # 同上，可以把if-else去掉，只留if里面的分支
         if isTree(tree['right']):
-            return recursion_tree(tree['right'], inData, predictFacion)
+            return recursion_tree(tree['right'], inData, tree_type)
         else:
-            return predictFacion(tree['right'], inData)
+            return predict_faction(tree['right'], inData)
 
 
 # 计算全部测试结果
-def predict_test_data(tree, testData, predictFacion=predict_lmTree):
+def predict_test_data(tree, testData, tree_type):
     """
     Desc:
         调用 treeForeCast ，对特定模型的树进行预测，可以是 回归树 也可以是 模型树
@@ -70,7 +76,7 @@ def predict_test_data(tree, testData, predictFacion=predict_lmTree):
     yHat = mat(zeros((m, 1)))
     # print yHat
     for i in range(m):
-        yHat[i, 0] = recursion_tree(tree, mat(testData[i]), predictFacion)
+        yHat[i, 0] = recursion_tree(tree, mat(testData[i]), tree_type)
         # print "yHat==>", yHat[i, 0]
     return yHat
 

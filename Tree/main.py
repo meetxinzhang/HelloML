@@ -3,7 +3,7 @@ from Tree.create import load_list_data, create_recursion_tree
 from Tree.args import leaf_lmTree, err_lmTree
 from Tree.predict import predict_test_data, predict_lmTree
 from Tree.r_forest import random_forest, random_forest_predict
-from PCA.p import outPut
+from PCA.main import outPut
 
 
 # 载入数据----------------------------------------------------
@@ -51,7 +51,7 @@ print(np.isnan(test_data).any())
 
 
 # 随机森林-----------------------------------------------------------
-forest = random_forest(train_data, ratio=0.3, n_tree=10, n_features=15)
+forest = random_forest(train_data, ratio=0.3, n_tree=10)
 print('森林结构为：')
 print(forest)
 

@@ -2,8 +2,7 @@ import numpy as np
 import random as rd
 
 from Tree.create import create_recursion_tree
-from Tree.args import leaf_lmTree, err_lmTree
-from Tree.predict import predict_test_data, predict_lmTree
+from Tree.predict import predict_test_data
 
 
 def randomize_sample(dataSet, ratio):
@@ -28,29 +27,30 @@ def randomize_sample(dataSet, ratio):
     return sample
 
 
-def randomize_features(dataSet, n_features):
-    """
-    训练特征的随机化
-    找出分割数据集的最优特征
-    :param
-        dataSet:          数据集, list
-    :param
-        n_features:       要随机选取的特征个数
-    :return:
-        alues.tolist()    最优的特征 index，特征值 row[index]， 分割完的数据 groups（left, right）
-    """
-    m, n = np.shape(dataSet)
-
-    dataSet = np.mat(dataSet)
-    values = dataSet[:, 0]
-    features_index = list()
-
-    while len(features_index) < n_features:
-        index = round(np.random.uniform(1, n-1))
-        if index not in features_index:
-            features_index.append(index)
-            values = np.c_[values, dataSet[:, index]]
-    return values.tolist()
+# 对随机森林的特征选择理解错误，弃用
+# def randomize_features(dataSet, n_features):
+#     """
+#     训练特征的随机化
+#     找出分割数据集的最优特征
+#     :param
+#         dataSet:          数据集, list
+#     :param
+#         n_features:       要随机选取的特征个数
+#     :return:
+#         alues.tolist()    最优的特征 index，特征值 row[index]， 分割完的数据 groups（left, right）
+#     """
+#     m, n = np.shape(dataSet)
+#
+#     dataSet = np.mat(dataSet)
+#     values = dataSet[:, 0]
+#     features_index = list()
+#
+#     while len(features_index) < n_features:
+#         index = round(np.random.uniform(1, n-1))
+#         if index not in features_index:
+#             features_index.append(index)
+#             values = np.c_[values, dataSet[:, index]]
+#     return values.tolist()
 
 
 def cross_validation_split(dataSet, n_folds):
@@ -82,7 +82,7 @@ def cross_validation_split(dataSet, n_folds):
 
 
 # Random Forest Algorithm
-def random_forest(train_data, ratio, n_tree, n_features):
+def random_forest(train_data, ratio, n_tree):
     """
     创建随机森林
     :param
@@ -97,30 +97,35 @@ def random_forest(train_data, ratio, n_tree, n_features):
     forest = list()
     # n_trees 表示决策树的数量
     for i in range(n_tree):
-        # 随机抽样的训练样本， 随机采样保证了每棵决策树训练集的差异性
+        # [1] 样本随机， 随机采样保证了每棵决策树训练集的差异性
         sample = randomize_sample(train_data, ratio)
-        #sample = randomize_features(sample, n_features)
         # 创建一个决策树
         tree = create_recursion_tree(sample,
-                                     leaf_faction=leaf_lmTree,
-                                     err_faction=err_lmTree,
+                                     tree_type='regression',
+                                     # [2] 特征随机，在选择分割点的时候随机去掉几个特征
+                                     num_remove=5,
                                      opt={'err_tolerance': 1, 'n_tolerance': 901})
         forest.append(tree)
     return forest
 
 
 def random_forest_predict(forest, test_data):
-    yHat_list = []
+    m, n = np.shape(test_data)
+
+    yHats = np.mat(np.zeros([m, 1], float))
 
     for tree in forest:
         yHat = predict_test_data(tree,
                                  test_data,
-                                 predictFacion=predict_lmTree)
-        yHat_list.append(yHat)
+                                 tree_type='regression')
+
+        yHats = np.c_[yHats, yHat]
     # 综合所有树的预测值
-    # 取平均值
-    # TODO
-    
+    # 采取等权值投票，即均值
+    pre_value = np.sum(yHats, axis=1)/10
+    print(np.shape(pre_value))
+    print(pre_value)
+
 
 
 

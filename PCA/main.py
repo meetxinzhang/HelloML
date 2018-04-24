@@ -11,6 +11,7 @@ def standardization(dataX):
     # 我们的数据变量按列进行排列(即一行为一个样本),按列求均值，即求各个特征的均值
     meanVal = dataX.mean(axis=0)
     # meanVal = np.mean(dataX, axis=0) 此同为np的方法,得到Series
+    # 求标准差
     stdVal = dataX.std(axis=0)
     datasTad = (dataX-meanVal)/stdVal
     return datasTad

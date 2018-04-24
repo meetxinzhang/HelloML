@@ -16,50 +16,66 @@ def split_data(dataset, feat_idx, value):
     return left, right
 
 
-def choose_best_feature(dataList, leaf_faction, err_faction, opt):
+def choose_best_feature(dataList, tree_type='regression', num_remove=0, opt=None):
     """
     选取最佳分割特征和特征值
+    :param opt: [err_tolerance: 最小误差下降值, n_tolerance: 数据切分最小样本数]
+    :param num_remove:
+    :param tree_type:
     :param dataList: 待划分的数据集
-           leafType: 创建叶子节点的函数
-           errType: 计算数据误差的函数
-           opt: [err_tolerance: 最小误差下降值, n_tolerance: 数据切分最小样本数]
     :returns best_feat_idx: 最佳样本分割列
              best_feat_val： 最佳样本分割值
     """
+    # 赋初始值
     dataList = np.array(dataList)
     m, n = dataList.shape
-    err_tolerance, n_tolerance = opt['err_tolerance'], opt['n_tolerance']
 
-    # # 如果结果集(最后一列为1个变量)，就返回退出
-    # # .T 对数据集进行转置
-    # # .tolist()[0] 转化为数组并取第0列
-    # if len(set(dataList[:, -1].T.tolist()[0])) == 1:  # 如果集合size为1，也就是说全部的数据都是同一个类别，不用继续划分。
-    #     #  exit cond 1
-    #     return None, leafType(dataList)
+    if opt is None:
+        opt = {'err_tolerance': 1, 'n_tolerance': 4}
+    else:
+        err_tolerance, n_tolerance = opt['err_tolerance'], opt['n_tolerance']
 
+    if tree_type == 'regression':
+        leaf_faction = leaf_lmTree
+        err_faction = err_lmTree
+    else:
+        # TODO 换成其他树的叶子生成算法，和切割点衡量算法
+        leaf_faction = leaf_lmTree
+        err_faction = err_lmTree
 
-    err = err_faction(dataList)
-    # 赋初始值
     best_feat_idx, best_feat_val, best_err = 0, 0, float('inf')
-    # 遍历所有特征
-    # n-1
-    for feat_idx in range(1, n):
-        values = dataList[:, feat_idx]
-        # 遍历所有特征值
-        for val in values:
-            # 按照当前特征和特征值分割数据
-            left, right = split_data(dataList.tolist(), feat_idx, val)
+    err = err_faction(dataList)
 
-            if len(left) < n_tolerance or len(right) < n_tolerance:
-                # 如果切分的样本量太小
-                continue
+    # 随机森林部分，随机去掉 num_remove 个特征
+    remove_idx = []
+    if num_remove != 0:
+        while len(remove_idx) < num_remove:
+            index = np.random.randint(1, n - 1)
+            if index not in remove_idx:
+                remove_idx.append(index)
 
-            # 计算误差
-            new_err = err_faction(left) + err_faction(right)
-            if new_err < best_err:
-                best_feat_idx = feat_idx
-                best_feat_val = val
-                best_err = new_err
+    # 遍历所有特征，如果是随机森林，则随机去掉特征
+    for feat_idx in range(1, n):  # 生成从1到9的列表
+        if feat_idx not in remove_idx:
+
+            values = dataList[:, feat_idx]
+            # 遍历所有特征值
+            for val in values:
+                # 按照当前特征和特征值分割数据
+                left, right = split_data(dataList.tolist(), feat_idx, val)
+
+                if len(left) < n_tolerance or len(right) < n_tolerance:
+                    # 如果切分的样本量太小，退出当前循环
+                    continue
+
+                # 计算误差
+                new_err = err_faction(left) + err_faction(right)
+                if new_err < best_err:
+                    best_feat_idx = feat_idx
+                    best_feat_val = val
+                    best_err = new_err
+        else:
+            continue
 
     # 如果误差变化并不大归为一类
     if abs(err - best_err) < err_tolerance:
