@@ -6,7 +6,7 @@ from PCA.main import *
 def create_recursion_tree(dataList, tree_type, num_remove, opt):
     """
     创建迭代树结构
-    :return 树模型参数，字典类型
+    :return tree 树模型参数，字典类型
     """
 
     # 选择最优化分特征和特征值

@@ -1,13 +1,16 @@
 import numpy as np
 
 
-def split_data(dataset, feat_idx, value):
+def split_data(dataSet, feat_idx, value):
     """
     根据给定的特征编号和特征值对数据集进行分割
+    :param dataSet 数据集
+    :param feat_idx 待分割特征位置
+    :param value 待分割的特征值
     :returns list 矩阵
     """
     left, right = [], []
-    for line in dataset:
+    for line in dataSet:
         if line[feat_idx] <= value:
             left.append(line)
         else:
@@ -20,11 +23,11 @@ def choose_best_feature(dataList, tree_type='regression', num_remove=0, opt=None
     """
     选取最佳分割特征和特征值
     :param opt: [err_tolerance: 最小误差下降值, n_tolerance: 数据切分最小样本数]
-    :param num_remove:
-    :param tree_type:
-    :param dataList: 待划分的数据集
-    :returns best_feat_idx: 最佳样本分割列
-             best_feat_val： 最佳样本分割值
+    :param num_remove 待随机去掉的特征数目
+    :param tree_type 树类型
+    :param dataList 待划分的数据集
+    :return best_feat_idx: 最佳样本分割列
+    :return best_feat_val： 最佳样本分割值
     """
     # 赋初始值
     dataList = np.array(dataList)
@@ -94,9 +97,9 @@ def linear_regression(dataList):
     获取线性回归系数
     因变量在第0列，其余为自变量
     :param dataList: 数据集
-    :return: w: 回归系数，是一维矩阵
-             X: 自变量矩阵
-             y: 因变量矩阵
+    :return w 回归系数，是一维矩阵
+    :return X 自变量矩阵
+    :return y 因变量矩阵
     """
     dataset = np.matrix(dataList)
     # 分割数据并添加常数列

@@ -10,11 +10,9 @@ def randomize_sample(dataSet, ratio):
     训练数据的随机化
     创建数据集的随机子样本
     random_forest(评估算法性能，返回模型得分)
-    :param
-        dataSet         训练数据集
-        ratio           训练数据集的样本比例
-    :return:
-        sample          随机抽样的训练样本
+    :param dataSet 训练数据集
+    :param ratio 训练数据集的样本比例
+    :return sample 列表，存放随机抽样的训练样本
     """
     sample = list()
     # 训练样本的按比例抽样。
@@ -58,11 +56,9 @@ def cross_validation_split(dataSet, n_folds):
     样本数据随机无放回抽样，用于交叉验证
     将数据集进行抽重抽样 n_folds 份，数据可以重复抽取
 
-    :param
-        dataset          原始数据集
-        n_folds          数据集dataset分成n_flods份
-    :return
-        dataset_split    list集合，存放的是：将数据集进行抽重抽样 n_folds 份，数据可以重复抽取
+    :param dataSet 原始数据集
+    :param n_folds 数据集分成 n_flods 份
+    :return dataset_split 列表
     """
     dataSet_split = list()
     dataSet_copy = list(dataSet)       # 复制一份 dataset,防止 dataset 的内容改变
@@ -81,17 +77,13 @@ def cross_validation_split(dataSet, n_folds):
     return dataSet_split
 
 
-# Random Forest Algorithm
 def random_forest(train_data, ratio, n_tree):
     """
     创建随机森林
-    :param
-        train           训练数据集
-        ratio           训练数据集的样本比例
-        n_trees         决策树的个数
-        n_features      选取的特征的个数
-    :return
-        predictions     每一行的预测结果，bagging 预测最后的分类结果
+    :param train_data 训练数据集
+    :param ratio 训练数据集的样本比例
+    :param n_tree 树的个数
+    :return forest 树结构，列表
     """
 
     forest = list()
