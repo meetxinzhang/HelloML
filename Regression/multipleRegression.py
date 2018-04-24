@@ -1,6 +1,6 @@
 from numpy import genfromtxt
 import numpy as np
-from sklearn import datasets,linear_model
+from sklearn import datasets, linear_model
 
 
 dataPath = r"aaa.csv"
