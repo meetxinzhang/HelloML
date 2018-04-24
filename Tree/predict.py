@@ -21,20 +21,14 @@ def predict_lmTree(model, inDat):
     return float(X * model)
 
 
-# 计算单行预测的结果
-# 在给定树结构的情况下，对于单个数据点，该函数会给出一个预测值。
-# modelEval是对叶节点进行预测的函数引用，指定树的类型，以便在叶节点上调用合适的模型。
-# 此函数自顶向下遍历整棵树，直到命中叶节点为止，一旦到达叶节点，它就会在输入数据上
-# 调用modelEval()函数，该函数的默认值为regTreeEval()·
 def recursion_tree(tree, inData, tree_type='regression'):
     """
-    Desc:
-        遍历树
-    Args:
+    迭代遍历树
+    :param
         tree -- 已经训练好的树的模型
         inData -- 输入的测试数据，只有一行
         modelEval -- 预测的树的模型类型，可选值为 regTreeEval（回归树） 或 modelTreeEval（模型树），默认为回归树
-    Returns:
+    :return
         返回预测值
     """
     if tree_type == 'regression':
@@ -60,16 +54,15 @@ def recursion_tree(tree, inData, tree_type='regression'):
             return predict_faction(tree['right'], inData)
 
 
-# 计算全部测试结果
 def predict_test_data(tree, testData, tree_type):
     """
-    Desc:
-        调用 treeForeCast ，对特定模型的树进行预测，可以是 回归树 也可以是 模型树
-    Args:
+    计算全部测试结果
+    调用 treeForeCast ，对特定模型的树进行预测，可以是 回归树 也可以是 模型树
+    :param
         tree -- 已经训练好的树的模型
         testData -- 输入的测试数据
         modelEval -- 预测的树的模型类型，可选值为 regTreeEval（回归树） 或 modelTreeEval（模型树），默认为回归树
-    Returns:
+    :return
         返回预测值矩阵
     """
     m = len(testData)
@@ -84,11 +77,10 @@ def predict_test_data(tree, testData, tree_type):
 # 判断节点是否是一个字典
 def isTree(obj):
     """
-    Desc:
-        测试输入变量是否是一棵树,即是否是一个字典
-    Args:
+    测试输入变量是否是一棵树,即是否是一个字典
+    :param
         obj -- 输入变量
-    Returns:
+    :return
         返回布尔类型的结果。如果 obj 是一个字典，返回true，否则返回 false
     """
     return type(obj).__name__ == 'dict'
