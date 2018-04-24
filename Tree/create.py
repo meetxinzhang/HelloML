@@ -5,7 +5,7 @@ from PCA.main import *
 
 def create_recursion_tree(dataList, tree_type, num_remove, opt):
     """
-    创建递归树结构
+    创建迭代树结构
     :return 树模型参数，字典类型
     """
 

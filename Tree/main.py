@@ -18,9 +18,6 @@ test_data = load_list_data('test_data.txt')
 # 检验缺失值
 print(np.isnan(test_data).any())
 
-# 随机森林
-
-
 # 影响预测准确性，弃用
 # # 预处理：使用 PCA 将数据变为线性无关-------------------------------------
 # # 分割出自变量，因为PCA只处理自变量
@@ -34,7 +31,7 @@ print(np.isnan(test_data).any())
 # train_data = train_data.tolist()
 
 
-# 树> logistic model tree --------------------------------------------
+# 树> logistic model tree ------------单独使用树进行训练预测-------------
 # tree = create_recursion_tree(train_data,
 #                              leaf_faction=leaf_lmTree,
 #                              err_faction=err_lmTree,
@@ -50,7 +47,7 @@ print(np.isnan(test_data).any())
 # print(yHat)
 
 
-# 随机森林-----------------------------------------------------------
+# 随机森林--------------------使用随机森林进行训练预测------------------------
 forest = random_forest(train_data, ratio=0.3, n_tree=10)
 print('森林结构为：')
 print(forest)
