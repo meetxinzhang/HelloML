@@ -117,7 +117,7 @@ def random_forest_predict(forest, test_data):
     pre_value = np.sum(yHats, axis=1)/10
     print(np.shape(pre_value))
     print(pre_value)
-
+    pass
 
 
 
