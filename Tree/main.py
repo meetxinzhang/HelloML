@@ -4,6 +4,7 @@ from Tree.args import leaf_lmTree, err_lmTree
 from Tree.predict import predict_test_data, predict_lmTree
 from Tree.r_forest import random_forest, random_forest_predict
 from PCA.main import outPut
+from Tree.gc_forest import *
 
 
 # # 预处理：---------------------------------------------------------
@@ -24,8 +25,10 @@ def usePCA(dataX):
 def standardization(dataX):
     """
     0均值标准化(Z-score standardization)
-    :param dataX:
-    :return:
+    因为数据本身的量纲不统一，导致数据的数量级差别很大，导致测试数据的过拟合问题很严重，
+    所以需要使用标准化处理。
+    :param dataX 输入数据，列表
+    :return dataTad.tolist()
     """
     dataX = np.array(dataX)
     # 我们的数据变量按列进行排列(即一行为一个样本),按列求均值，即求各个特征的均值
@@ -40,18 +43,19 @@ def standardization(dataX):
 if __name__ == '__main__':
     # 载入数据------------------------------------------------------------
     # 训练数据 16维
-    print("训练数据：")
-    train_data = load_list_data('train_data.txt')
-    train_data = standardization(train_data)
-    # 检验缺省值
-    print(np.isnan(train_data).any())
-    # 测试数据 15维
-    print("测试数据：")
-    test_data = load_list_data('test_data.txt')
-    # 检验缺失值
-    print(np.isnan(test_data).any())
+    # print("训练数据：")
+    # train_data = load_list_data('train_data.txt')
+    # train_data = standardization(train_data)
+    # # 检验缺省值
+    # print(np.isnan(train_data).any())
+    # # 测试数据 15维
+    # print("测试数据：")
+    # test_data = load_list_data('test_data.txt')
+    # test_data = standardization(test_data)
+    # # 检验缺失值
+    # print(np.isnan(test_data).any())
 
-    # 树> logistic model tree ------------单独使用树进行训练预测-------------
+    #  ---------------单独使用 logistic model tree 进行训练预测----------
     # tree = create_recursion_tree(train_data,
     #                              leaf_faction=leaf_lmTree,
     #                              err_faction=err_lmTree,
@@ -66,13 +70,25 @@ if __name__ == '__main__':
     #                          predictFacion=predict_lmTree)
     # print(yHat)
 
-    # 随机森林--------------------使用随机森林进行训练预测------------------------
-    forest = random_forest(train_data, ratio=0.3, n_tree=10)
-    print('森林结构为：')
-    print(forest)
+    # --------------------使用随机森林进行训练预测------------------------
+    # forest = random_forest(train_data, ratio=0.7, n_tree=100)
+    # print('森林结构为：')
+    # print(forest)
+    #
+    # print('预测结果为：')
+    # yHats = random_forest_predict(forest, test_data)
+    # print(yHats)
 
-    print('预测结果为：')
-    yHats = random_forest_predict(forest, test_data)
-    print(yHats)
+    # --------------------使用深度森林进行训练预测------------------------
+    train_iris = load_list_data('iris.txt')
+    train_iris = np.matrix(train_iris)
+    y_iris = train_iris[:, -1]
+    X_iris = np.delete(train_iris, -1, axis=1)
+    X_iris = np.array(X_iris)
+    y_iris = np.array(y_iris)
+    print(np.shape(X_iris))
+    print(np.shape(y_iris))
+    gcf = gcForest(shape_1X=[1, 4], window=2)
+    gcf.fit(X_iris, y_iris)
     pass
 

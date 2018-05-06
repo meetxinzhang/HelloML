@@ -114,7 +114,7 @@ def random_forest_predict(forest, test_data):
         yHats = np.c_[yHats, yHat]
     # 综合所有树的预测值
     # 采取等权值投票，即均值
-    pre_value = np.sum(yHats, axis=1)/10
+    pre_value = np.sum(yHats, axis=1)/100
     print(np.shape(pre_value))
     print(pre_value)
     pass
