@@ -12,7 +12,7 @@
 #
 # print(np.r_[a, b])
 
-# 这是一个识别 异或门 的简单神经网络
+# 这是一个识别"异或门"的BP神经网络
 import tensorflow as tf
 import numpy as np
 
@@ -54,12 +54,12 @@ with tf.name_scope('train'):
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
 
-    # with tf.summary.FileWriter('./',sess.graph):
-    # 	...
-    # for i in range(5000):
-    #     print(sess.run(loss, {x: X, y: Y}))
-    #     sess.run(train, {x: X, y: Y})
-    # print(sess.run([W, c, w]))
+    #with tf.summary.FileWriter('./',sess.graph):
+    	#...
+    for i in range(600):
+        print(sess.run(loss, {x: X, y: Y}))
+        sess.run(train, {x: X, y: Y})
+    print(sess.run([W, c, w]))
 
-    print(sess.run(tf.matmul(x, W), feed_dict={x: X, y: Y}))
-    print(sess.run(c, feed_dict={x: X, y: Y}))
+    # print(sess.run(tf.matmul(x, W), feed_dict={x: X, y: Y}))
+    # print(sess.run(c, feed_dict={x: X, y: Y}))

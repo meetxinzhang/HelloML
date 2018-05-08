@@ -1,6 +1,5 @@
 from Tree.args import *
 from Tree.predict import *
-from PCA.main import *
 
 
 def create_recursion_tree(dataList, tree_type, num_remove, opt):

@@ -14,7 +14,7 @@ def loadDataset(infile):
 
 if __name__ == "__main__":
     data_X = loadDataset(r"data/testSet.txt")
-    k = 3
+    k = 4
     clf = KMeansClassifier(k)
     clf.fit(data_X)
     cents = clf._centroids

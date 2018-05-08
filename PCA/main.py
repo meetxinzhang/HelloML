@@ -74,9 +74,7 @@ def outPut(dataList, dim):
 
 if __name__ == "__main__":
     # 导入数据，切记不含因变量。我们在此构造df1数据，此数据变量间没有一定的相关性，只做计算演示。
-    df1 = np.array(load_data('train_data.txt'))
-    # 去掉第一列因变量
-    # df1 = df1[:, 1:]
+    df1 = np.array(load_data('data.txt'))
 
     df1 = pd.DataFrame(df1)
     datasTad = standardization(df1)

@@ -98,6 +98,7 @@ def random_forest(train_data, ratio, n_tree):
                                      num_remove=5,
                                      opt={'err_tolerance': 1, 'n_tolerance': 901})
         forest.append(tree)
+        print('num of tree: ', len(forest))
     return forest
 
 
