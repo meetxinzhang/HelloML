@@ -4,6 +4,7 @@ from Tree.args import leaf_lmTree, err_lmTree
 from Tree.predict import predict_test_data, predict_lmTree
 from Tree.r_forest import random_forest, random_forest_predict
 from Tree.gc_forest import *
+from Tree.evaluation import *
 
 
 # # 预处理：---------------------------------------------------------
@@ -70,13 +71,19 @@ if __name__ == '__main__':
     # print(yHat)
 
     # --------------------使用随机森林进行训练预测------------------------
-    forest = random_forest(train_data, ratio=0.7, n_tree=70)
+    forest = random_forest(train_data, ratio=0.7, n_tree=100)
     print('森林结构为：')
     print(forest)
 
     print('预测结果为：')
     yHats = random_forest_predict(forest, test_data)
     print(yHats)
+
+    # 评估
+    test_data = np.matrix(test_data)
+    y_true = test_data[:, 0]
+    mre(y_true, yHats)
+    r2(y_true, yHats)
 
     # --------------------使用深度森林进行训练预测------------------------
     # train_iris = load_list_data('iris.txt')
