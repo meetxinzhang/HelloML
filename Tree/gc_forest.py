@@ -66,6 +66,8 @@ class gcForest(object):
         setattr(self, 'shape_1X', shape_1X)
         setattr(self, 'n_layer', 0)
         setattr(self, '_n_samples', 0)
+
+        # 总森林个数 = 2 * n_cascadeRF
         setattr(self, 'n_cascadeRF', int(n_cascadeRF))
         if isinstance(window, int):
             setattr(self, 'window', [window])
@@ -244,22 +246,33 @@ class gcForest(object):
         if any(s < window for s in shape_1X):
             raise ValueError('window must be smaller than both dimensions for an image')
 
-        # 窗口中心点的个数
+        # 滑动时产生的窗口个数
         len_iter_x = np.floor_divide((shape_1X[1] - window), stride) + 1
         len_iter_y = np.floor_divide((shape_1X[0] - window), stride) + 1
-        # 每个窗口中心点的坐标
+        # 每个窗口的左上角坐标
         iterx_array = np.arange(0, stride*len_iter_x, stride)
         itery_array = np.arange(0, stride*len_iter_y, stride)
 
-
         ref_row = np.arange(0, window)
-        # ref_ind 是图片中窗口内的横坐标
+
+        # ref_ind 是图片中第一个窗口内的横坐标
         # np.ravel 降维，默认横向，i 表示行数
         ref_ind = np.ravel([ref_row + shape_1X[1] * i for i in range(window)])
-        # 被窗口覆盖的点坐标
+
+        # 所有被窗口覆盖的点坐标
+        # 关于 itertools.product()，求笛卡尔积，例：
+        # list1 = ['a', 'b']
+        # list2 = ['c', 'd']
+        # print(itertools.product(list1, list2))
+        # ('a', 'c')
+        # ('a', 'd')
+        # ('b', 'c')
+        # ('b', 'd')
         inds_to_take = [ref_ind + ix + shape_1X[1] * iy
                         for ix, iy in itertools.product(iterx_array, itery_array)]
 
+        # reshape(-1, window**2) 表示转换成 window**2 列，行数自适应
+        # sliced_imgs 每一行即是一个窗口
         sliced_imgs = np.take(X, inds_to_take, axis=1).reshape(-1, window**2)
 
         # 有标签，训练
@@ -300,7 +313,7 @@ class gcForest(object):
         len_iter = np.floor_divide((shape_1X[1] - window), stride) + 1
         iter_array = np.arange(0, stride*len_iter, stride)
 
-        # np.prod 元素相乘，这里一维的数据，得到的就是长度
+        # np.prod 元素相乘，这里一维的数据，得到的就是长度，用len()就可以了，这里作者在炫技啊
         ind_1X = np.arange(np.prod(shape_1X))
         # 被窗口覆盖的点坐标
         inds_to_take = [ind_1X[i:i+window] for i in iter_array]
@@ -332,6 +345,7 @@ class gcForest(object):
             max_layers = getattr(self, 'cascade_layer')
             tol = getattr(self, 'tolerance')
 
+            # sklearn.train_test_split 从样本中随机的按比例选取train data和testdata
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
             self.n_layer += 1
@@ -403,6 +417,8 @@ class gcForest(object):
                 crf.fit(X, y)
                 setattr(self, '_casprf{}_{}'.format(self.n_layer, irf), prf)
                 setattr(self, '_cascrf{}_{}'.format(self.n_layer, irf), crf)
+
+                # 获取预测概率，由于已经调用过 .fit()，所以不需要再使用.predict_proba() 了
                 prf_crf_pred.append(prf.oob_decision_function_)
                 prf_crf_pred.append(crf.oob_decision_function_)
         elif y is None:
@@ -427,6 +443,7 @@ class gcForest(object):
         :return: float
             the cascade accuracy.
         """
+        # 回调.cascade_forest，y为空，只调用预测函数，减小了代码重复性
         casc_pred_prob = np.mean(self.cascade_forest(X_test), axis=0)
         casc_pred = np.argmax(casc_pred_prob, axis=1)
         casc_accuracy = accuracy_score(y_true=y_test, y_pred=casc_pred)
