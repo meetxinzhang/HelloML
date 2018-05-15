@@ -120,9 +120,3 @@ def random_forest_predict(forest, test_data):
     print(np.shape(pre_value))
     return pre_value
     pass
-
-
-
-
-
-

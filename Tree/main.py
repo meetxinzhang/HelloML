@@ -43,17 +43,17 @@ def standardization(dataX):
 if __name__ == '__main__':
     # 载入数据---------------------------------------------------------
     # 训练数据 16维
-    print("训练数据：")
-    train_data = load_list_data('train_data.txt')
-    train_data = standardization(train_data)
-    # 检验缺省值
-    print(np.isnan(train_data).any())
-    # 测试数据 15维
-    print("测试数据：")
-    test_data = load_list_data('test_data.txt')
-    test_data = standardization(test_data)
-    # 检验缺失值
-    print(np.isnan(test_data).any())
+    # print("训练数据：")
+    # train_data = load_list_data('train_data.txt')
+    # train_data = standardization(train_data)
+    # # 检验缺省值
+    # print(np.isnan(train_data).any())
+    # # 测试数据 15维
+    # print("测试数据：")
+    # test_data = load_list_data('test_data.txt')
+    # test_data = standardization(test_data)
+    # # 检验缺失值
+    # print(np.isnan(test_data).any())
 
     #  ---------------单独使用 logistic model tree 进行训练预测----------
     # tree = create_recursion_tree(train_data,
@@ -71,30 +71,41 @@ if __name__ == '__main__':
     # print(yHat)
 
     # --------------------使用随机森林进行训练预测------------------------
-    forest = random_forest(train_data, ratio=0.7, n_tree=100)
-    print('森林结构为：')
-    print(forest)
-
-    print('预测结果为：')
-    yHats = random_forest_predict(forest, test_data)
-    print(yHats)
-
-    # 评估
-    test_data = np.matrix(test_data)
-    y_true = test_data[:, 0]
-    mre(y_true, yHats)
-    r2(y_true, yHats)
+    # forest = random_forest(train_data, ratio=0.7, n_tree=100)
+    # print('森林结构为：')
+    # print(forest)
+    #
+    # print('预测结果为：')
+    # yHats = random_forest_predict(forest, test_data)
+    # print(yHats)
+    #
+    # # 评估
+    # test_data = np.matrix(test_data)
+    # y_true = test_data[:, 0]
+    # mre(y_true, yHats)
+    # r2(y_true, yHats)
 
     # --------------------使用深度森林进行训练预测------------------------
-    # train_iris = load_list_data('iris.txt')
-    # train_iris = np.matrix(train_iris)
-    # y_iris = train_iris[:, -1]
-    # X_iris = np.delete(train_iris, -1, axis=1)
-    # X_iris = np.array(X_iris)
-    # y_iris = np.ravel(np.array(y_iris))
-    # print(np.shape(X_iris))
-    # print(np.shape(y_iris))
-    # gcf = gcForest(shape_1X=[1, 4], window=4)
-    # gcf.fit(X_iris, y_iris)
-    # pass
+    train_iris = load_list_data('iris.txt')
+    train_iris = np.matrix(train_iris)
+    y_iris = train_iris[:, -1]
+    X_iris = np.delete(train_iris, -1, axis=1)
+    X_iris = np.array(X_iris)
+    y_iris = np.ravel(np.array(y_iris))
+    print(np.shape(X_iris))
+    print(np.shape(y_iris))
+
+    # from sklearn.datasets import load_iris, load_digits
+    # from sklearn.model_selection import train_test_split
+    # iris = load_iris()
+    # X = iris.data
+    # y = iris.target
+    # X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.33)
+    # print(np.shape(X_tr))
+    # print(np.shape(y_tr))
+    # print(y_tr)
+    
+    gcf = gcForest(shape_1X=[1, 4], window=2)
+    gcf.fit(X_iris, y_iris)
+    pass
 
