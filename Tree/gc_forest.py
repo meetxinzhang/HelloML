@@ -163,12 +163,10 @@ class gcForest(object):
             wdw_pred_prob = self.window_slicing_pred_prob(X, wdw_size, shape_1X, y=y)
             mgs_pred_prob.append(wdw_pred_prob)
 
-            print('window size:{}'.format(wdw_size), np.shape(wdw_pred_prob))
+            print("window size:{}, shape of out:{}".format(wdw_size, np.shape(wdw_pred_prob)))
 
         # 横向拼接不同窗口的 多粒度扫描 概率结果
-        a = np.concatenate(mgs_pred_prob, axis=1)
-        print(a, np.shape(a))
-        return a
+        return np.concatenate(mgs_pred_prob, axis=1)
 
     def window_slicing_pred_prob(self, X, window, shape_1X, y=None):
         """ Performs a window slicing of the input data and send them through Random Forests.
