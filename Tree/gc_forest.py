@@ -541,7 +541,7 @@ class gcForest(object):
             Concatenation of X and the predicted probabilities.
             To be used for the next layer in a cascade forest.
         """
-        # np.swapaxes 将第一和第二个维度交换？
+        # 关于 np.swapaxes 多维矩阵的转置
         # 例：
         # list = []
         # a = [[1, 2, 3],
