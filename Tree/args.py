@@ -19,7 +19,7 @@ def split_data(dataSet, feat_idx, value):
     return left, right
 
 
-def choose_best_feature(dataList, tree_type='regression', num_remove=0, opt=None):
+def choose_best_feature(dataList, X_train, y_train, tree_type='regression', num_remove=0, opt=None):
     """
     选取最佳分割特征和特征值
     :param opt: [err_tolerance: 最小误差下降值, n_tolerance: 数据切分最小样本数]
@@ -107,6 +107,7 @@ def linear_regression(dataList):
     X_ori, y = dataset[:, 1:], dataset[:, 0]
     X_ori, y = np.matrix(X_ori), np.matrix(y)
     # X_ori 少一列，y 只有一列
+    # 给 X_ori 添加常数列
     m, n = X_ori.shape
     X = np.matrix(np.ones((m, n+1)))
     X[:, 1:] = X_ori
