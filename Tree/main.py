@@ -29,8 +29,8 @@ if __name__ == '__main__':
     forest = MyRandomForest(tree_type='regression',
                             num_remove_feature=5,
                             opt={'err_tolerance': 1, 'n_tolerance': 20},
-                            sample_ratio=0.2,
-                            n_tree=3)
+                            sample_ratio=0.7,
+                            n_tree=100)
     # 训练
     mean_struct = forest.fit(X_train, y_train)
     print('森林中树结构的均值为：\n', mean_struct)
