@@ -22,7 +22,13 @@ class MyRandomForest:
                  opt={'err_tolerance': 1, 'n_tolerance': 4},
                  sample_ratio=0.7,
                  n_tree=100):
-
+        """
+        :param tree_type: 树类型，目前只支持LMT
+        :param num_remove_feature: 构建树的时候随机去掉的特征数目
+        :param opt: 预剪枝用到的超参数，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
+        :param sample_ratio: 构建树的时候随机抽样所占总样本的比例
+        :param n_tree: 树的数量
+        """
         self.tree_type = tree_type
         self.num_remove_feature = num_remove_feature
         self.opt = opt

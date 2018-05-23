@@ -7,10 +7,10 @@ from sklearn.model_selection import train_test_split
 if __name__ == '__main__':
     # 载入数据---------------------------------------------------------
     X_train, y_train, X_test = \
-        load_list_data_and_standardization('train_data.txt',
-                                           n_folds=10,
-                                           idx_test=0,
-                                           n_test=1)
+        load_list_data_and_standardization('train_data.txt',  # 文件名
+                                           n_folds=10,  # 把数据分成n_folds份
+                                           idx_test=0,  # 测试数据从第几份开始
+                                           n_test=1)  # 测试数据所占的份数
 
     #  ---------------单独使用 logistic model tree 进行训练预测----------
     # tree = MyTree(tree_type='regression',
@@ -26,11 +26,12 @@ if __name__ == '__main__':
 
     # --------------------使用随机森林进行训练预测------------------------
 
-    forest = MyRandomForest(tree_type='regression',
-                            num_remove_feature=5,
+    forest = MyRandomForest(tree_type='regression',  # 树参数：树类型，暂时只支持LMT，用作回归
+                            num_remove_feature=5,  # 树参数：构建树时，随机去掉的特征数量
                             opt={'err_tolerance': 1, 'n_tolerance': 20},
-                            sample_ratio=0.7,
-                            n_tree=100)
+                            # 树参数：预剪枝用到，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
+                            sample_ratio=0.7,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
+                            n_tree=100)  # 随机森林参数：树的数量
     # 训练
     mean_struct = forest.fit(X_train, y_train)
     print('森林中树结构的均值为：\n', mean_struct)
