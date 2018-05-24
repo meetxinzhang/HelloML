@@ -139,5 +139,5 @@ class MyTree:
         :param obj: 输入节点
         :return: Boolean
         """
-        # 字典类型是内部节点，就是矩阵类型（回归系数）是叶子节点
+        # 字典类型是内部节点，矩阵类型（回归系数）是叶子节点
         return not isinstance(obj, dict)

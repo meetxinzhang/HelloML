@@ -19,7 +19,7 @@ class MyRandomForest:
     def __init__(self,
                  tree_type='regression',
                  num_remove_feature=5,
-                 opt={'err_tolerance': 1, 'n_tolerance': 4},
+                 opt=None,
                  sample_ratio=0.7,
                  n_tree=100):
         """
@@ -29,6 +29,10 @@ class MyRandomForest:
         :param sample_ratio: 构建树的时候随机抽样所占总样本的比例
         :param n_tree: 树的数量
         """
+        if opt is None:
+            self.opt = {'err_tolerance': 1, 'n_tolerance': 4}
+        else:
+            self.opt = opt
         self.tree_type = tree_type
         self.num_remove_feature = num_remove_feature
         self.opt = opt
@@ -93,10 +97,10 @@ class MyRandomForest:
             X_train, y_train = self.randomize_sample(X_train, y_train, self.sample_ratio)
 
             # 创建一个决策树
-            tree = MyTree(tree_type='regression',
+            tree = MyTree(tree_type=self.tree_type,
                           # [2] 特征随机，在选择分割点的时候随机去掉几个特征
-                          num_remove_feature=5,
-                          opt={'err_tolerance': 1, 'n_tolerance': 4})
+                          num_remove_feature=self.num_remove_feature,
+                          opt=self.opt)
             # 训练
             struct = tree.fit(X_train, y_train)
             self.forest.append(tree)

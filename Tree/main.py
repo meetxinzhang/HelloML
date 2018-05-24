@@ -2,8 +2,6 @@ from Tree.my_tree import MyTree
 from Tree.r_forest import MyRandomForest
 from Tree.tools import *
 
-from sklearn.model_selection import train_test_split
-
 if __name__ == '__main__':
     # 载入数据---------------------------------------------------------
     X_train, y_train, X_test = \
@@ -28,10 +26,10 @@ if __name__ == '__main__':
 
     forest = MyRandomForest(tree_type='regression',  # 树参数：树类型，暂时只支持LMT，用作回归
                             num_remove_feature=5,  # 树参数：构建树时，随机去掉的特征数量
-                            opt={'err_tolerance': 1, 'n_tolerance': 20},
+                            opt={'err_tolerance': 1, 'n_tolerance': 901},
                             # 树参数：预剪枝用到，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
                             sample_ratio=0.7,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
-                            n_tree=100)  # 随机森林参数：树的数量
+                            n_tree=200)  # 随机森林参数：树的数量
     # 训练
     mean_struct = forest.fit(X_train, y_train)
     print('森林中树结构的均值为：\n', mean_struct)
