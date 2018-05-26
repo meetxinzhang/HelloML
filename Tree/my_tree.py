@@ -39,6 +39,19 @@ class MyTree:
                                               self.num_remove_feature,
                                               self.opt)
 
+        while feat_idx == 'err':
+            self.opt['n_tolerance'] += 10
+            print('matrix is singular, cannot do inverse,\nincreasing the second value of opt to {}'
+                  .format(self.opt['n_tolerance']))
+            feat_idx, value = choose_best_feature(X_train, y_train,
+                                                  self.tree_type,
+                                                  self.num_remove_feature,
+                                                  self.opt)
+            if feat_idx != 'err':
+                break
+
+            print('1111111111111: ', feat_idx)
+
         # 触底条件: 该点划分为叶子节点，此时 value 为回归系数矩阵
         if feat_idx is None:
             return value

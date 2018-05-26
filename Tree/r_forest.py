@@ -94,7 +94,7 @@ class MyRandomForest:
         # n_trees 表示决策树的数量
         for i in range(self.n_tree):
             # [1] 样本随机， 随机采样保证了每棵决策树训练集的差异性
-            X_train, y_train = self.randomize_sample(X_train, y_train, self.sample_ratio)
+            X_train_item, y_train_item = self.randomize_sample(X_train, y_train, self.sample_ratio)
 
             # 创建一个决策树
             tree = MyTree(tree_type=self.tree_type,
@@ -102,13 +102,15 @@ class MyRandomForest:
                           num_remove_feature=self.num_remove_feature,
                           opt=self.opt)
             # 训练
-            struct = tree.fit(X_train, y_train)
+            struct = tree.fit(X_train_item, y_train_item)
             self.forest.append(tree)
             self.struct.append(struct)
             print('num of tree: ', len(self.forest))
-        self.struct = np.concatenate(self.struct, axis=1)
-        self.struct = np.sum(self.struct, axis=1)/self.n_tree
-        return self.struct
+            print(struct)
+
+        # self.struct = np.concatenate(self.struct, axis=1)
+        # self.struct = np.sum(self.struct, axis=1)/self.n_tree
+        # return self.struct
 
     def predict(self, X_test):
         m, n = np.shape(X_test)

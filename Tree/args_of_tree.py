@@ -58,7 +58,11 @@ def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, 
         err_faction = err_lmTree
 
     best_feat_idx, best_feat_val, best_err = 0, 0, float('inf')
-    err = err_faction(X_train, y_train)
+    temp_err = err_faction(X_train, y_train)
+    if temp_err == 'err':
+        return temp_err, 0
+    else:
+        err = temp_err
 
     # 随机森林部分，随机去掉 num_remove 个特征
     remove_idx = []
@@ -84,7 +88,12 @@ def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, 
                     continue
 
                 # 计算误差
-                new_err = err_faction(X_left, y_left) + err_faction(X_right, y_right)
+                temp_new_err = err_faction(X_left, y_left) + err_faction(X_right, y_right)
+                if temp_new_err == 'err':
+                    return temp_new_err, 0
+                else:
+                    new_err = temp_new_err
+
                 if new_err < best_err:
                     best_feat_idx = feat_idx
                     best_feat_val = val
@@ -126,7 +135,8 @@ def linear_regression(X_train, y_train):
     xTx = X.T * X
     # 如果矩阵的不可逆，会造成程序异常
     if np.linalg.det(xTx) == 0.0:
-        raise NameError('This matrix is singular, cannot do inverse,\ntry increasing the second value of opt')
+        return None, None
+        #raise NameError('This matrix is singular, cannot do inverse,\ntry increasing the second value of opt')
     # 最小二乘法求最优解:  w0*1+w1*x1=y
     w = xTx.I * (X.T * y_train)
 
@@ -156,6 +166,9 @@ def err_lmTree(X_train, y_train):
     :return: 见 def linear_regression
     """
     w, X = linear_regression(X_train, y_train)
+    if w is None and X is None:
+        return 'err'
+
     y_prime = X*w
     return np.var(y_prime - y_train)
 

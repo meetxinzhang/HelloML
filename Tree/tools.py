@@ -1,7 +1,7 @@
 from sklearn import metrics
+from PCA.main import outPut
 import numpy as np
 import random as rd
-
 
 def mre(y_true, y_pre):
     score = metrics.mean_absolute_error(y_true, y_pre, multioutput='uniform_average')
@@ -70,13 +70,14 @@ def load_list_data_and_standardization(filename, n_folds, n_test=1, idx_test=0):
     X_test1 = test_data[:, 1:]
     X_test1 = standardization(X_test1)
 
+    y_test1 = test_data[:, 0].tolist()
+
     X_train1 = train_data[:, 1:]
     X_train1 = standardization(X_train1)
 
-    y_train1 = train_data[:, 0]
-    y_train1 = y_train1.tolist()
+    y_train1 = train_data[:, 0].tolist()
 
-    return X_train1, y_train1, X_test1
+    return X_train1, y_train1, X_test1, y_test1
 
 
 def cross_validation_split(dataSet, n_folds):
@@ -105,17 +106,15 @@ def cross_validation_split(dataSet, n_folds):
     return dataSet_split
 
 
-# def usePCA(dataX):
+def usePCA(dataX):
     # 使用 PCA 将数据变为线性无关，影响预测准确性，弃用
-    # # 分割出自变量，因为PCA只处理自变量
-    # train_data = np.matrix(train_data)
-    # temp_X = train_data[:, 1:]
-    #
-    # pca_X = outPut(temp_X, 15)
-    #
-    # # 复原数据
-    # train_data[:, 1:] = pca_X
-    # train_data = train_data.tolist()
+    # 分割出自变量，因为PCA只处理自变量
+    train_data = np.matrix(dataX)
+    _, n = np.shape(dataX)
+
+    pca_X = outPut(dataX, n)
+
+    return pca_X.tolist()
 
 
 def standardization(dataX):
