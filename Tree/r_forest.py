@@ -14,7 +14,7 @@ class MyRandomForest:
     # 存放 my_tree.py 里 MyTree 类的对象
     forest = list()
     # 森林结构，为所有树结构的平均值
-    struct = list()
+    # struct = list()
 
     def __init__(self,
                  tree_type='regression',
