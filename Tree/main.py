@@ -2,6 +2,8 @@ from Tree.my_tree import MyTree
 from Tree.r_forest import MyRandomForest
 from Tree.tools import *
 
+from sklearn.ensemble import RandomForestRegressor
+
 if __name__ == '__main__':
     # 载入数据---------------------------------------------------------
     X_train, y_train, X_test, y_test = \
@@ -9,8 +11,8 @@ if __name__ == '__main__':
                                            n_folds=10,  # 把数据分成n_folds份
                                            idx_test=0,  # 测试数据从第几份开始
                                            n_test=1)  # 测试数据所占的份数
-    X_train = usePCA(X_train)
-    X_test = usePCA(X_test)
+    # X_train = usePCA(X_train)
+    # X_test = usePCA(X_test)
 
     #  ---------------单独使用 logistic model tree 进行训练预测----------
     # tree = MyTree(tree_type='regression',
@@ -27,17 +29,23 @@ if __name__ == '__main__':
     # --------------------使用随机森林进行训练预测------------------------
 
     forest = MyRandomForest(tree_type='regression',  # 树参数：树类型，暂时只支持LMT，用作回归
-                            num_remove_feature=5,  # 树参数：构建树时，随机去掉的特征数量
-                            opt={'err_tolerance': 1, 'n_tolerance': 500},
+                            num_remove_feature=1,  # 树参数：构建树时，随机去掉的特征数量
+                            opt={'err_tolerance': 1, 'n_tolerance': 50},
                             # 树参数：预剪枝用到，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
                             sample_ratio=0.7,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
                             n_tree=100)  # 随机森林参数：树的数量
-    # 训练
     forest.fit(X_train, y_train)
-    # print('森林中树结构的均值为：\n', mean_struct)
-    # 测试
     yHats = forest.predict(X_test)
-    print('预测结果为：\n', yHats)
+
+    # # sklearn
+    # forest = RandomForestRegressor(n_estimators=100, min_samples_split=50, n_jobs=10,  max_features='sqrt')
+    # forest.fit(X_train, y_train)
+    # yHats = forest.predict(X_test)
+
+    print('real \t predict')
+    for i in zip(yHats, y_test):
+        print(''.join('%s' % s for s in i))
+
     # 评估
     mre(y_test, yHats)
     r2(y_test, yHats)

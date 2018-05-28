@@ -104,7 +104,7 @@ class MyRandomForest:
             # 训练
             struct = tree.fit(X_train_item, y_train_item)
             self.forest.append(tree)
-            self.struct.append(struct)
+
             print('num of tree: ', len(self.forest))
             print(struct)
 

@@ -42,6 +42,11 @@ def load_list_data_and_standardization(filename, n_folds, n_test=1, idx_test=0):
             line_data = [float(data) for data in line.split('\t')]
             dataList.append(line_data)
 
+    # 不相关处理
+    dataList = np.array(dataList)
+    dataList[:, 5] = dataList[:, 5] / dataList[:, 6]
+    dataList = np.delete(dataList, [2, 6], axis=1).tolist()
+
     # 检验缺省值
     print('缺省检验：', np.isnan(dataList).any())
     print('原数据共{}行，随机分成{}等份，第{}份作为测试样本'.format(m, n_folds, idx_test+1))
