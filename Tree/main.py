@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 if __name__ == '__main__':
     # 载入数据---------------------------------------------------------
     X_train, y_train, X_test, y_test = \
-        load_list_data_and_standardization('train_data.txt',  # 文件名
+        load_list_data_and_standardization('lianjia.txt',  # 文件名
                                            n_folds=10,  # 把数据分成n_folds份
                                            idx_test=0,  # 测试数据从第几份开始
                                            n_test=1)  # 测试数据所占的份数
@@ -42,9 +42,9 @@ if __name__ == '__main__':
     # forest.fit(X_train, y_train)
     # yHats = forest.predict(X_test)
 
-    print('real \t predict')
+    print('\n 结果对比： real \t predict \n')
     for i in zip(yHats, y_test):
-        print(''.join('%s' % s for s in i))
+        print(''.join('%s \t' % s for s in i))
 
     # 评估
     mre(y_test, yHats)

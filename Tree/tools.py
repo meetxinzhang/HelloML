@@ -3,6 +3,7 @@ from PCA.main import outPut
 import numpy as np
 import random as rd
 
+
 def mre(y_true, y_pre):
     score = metrics.mean_absolute_error(y_true, y_pre, multioutput='uniform_average')
     print('平均绝对误差为：\n', score)
@@ -42,10 +43,10 @@ def load_list_data_and_standardization(filename, n_folds, n_test=1, idx_test=0):
             line_data = [float(data) for data in line.split('\t')]
             dataList.append(line_data)
 
-    # 不相关处理
-    dataList = np.array(dataList)
-    dataList[:, 5] = dataList[:, 5] / dataList[:, 6]
-    dataList = np.delete(dataList, [2, 6], axis=1).tolist()
+    # # 不相关处理
+    # dataList = np.array(dataList)
+    # dataList[:, 5] = dataList[:, 5] / dataList[:, 6]
+    # dataList = np.delete(dataList, [2, 6], axis=1).tolist()
 
     # 检验缺省值
     print('缺省检验：', np.isnan(dataList).any())
@@ -72,15 +73,19 @@ def load_list_data_and_standardization(filename, n_folds, n_test=1, idx_test=0):
     train_data = np.matrix(train_data)
     test_data = np.matrix(test_data)
 
-    X_test1 = test_data[:, 1:]
+    #X_test1 = test_data[:, 1:]
+    X_test1 = test_data[:, :-1]
     X_test1 = standardization(X_test1)
 
-    y_test1 = test_data[:, 0].tolist()
+    #y_test1 = test_data[:, 0].tolist()
+    y_test1 = test_data[:, -1].tolist()
 
-    X_train1 = train_data[:, 1:]
+    #X_train1 = train_data[:, 1:]
+    X_train1 = train_data[:, :-1]
     X_train1 = standardization(X_train1)
 
-    y_train1 = train_data[:, 0].tolist()
+    #y_train1 = train_data[:, 0].tolist()
+    y_train1 = train_data[:, -1].tolist()
 
     return X_train1, y_train1, X_test1, y_test1
 
