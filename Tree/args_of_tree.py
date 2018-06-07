@@ -88,11 +88,13 @@ def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, 
                     continue
 
                 # 计算误差
-                temp_new_err = err_faction(X_left, y_left) + err_faction(X_right, y_right)
-                if temp_new_err == 'err':
-                    return temp_new_err, 0
+                err_left = err_faction(X_left, y_left)
+                err_right = err_faction(X_right, y_right)
+
+                if err_left == 'err' or err_right == 'err':
+                    return 'err', 0
                 else:
-                    new_err = temp_new_err
+                    new_err = err_left + err_right
 
                 if new_err < best_err:
                     best_feat_idx = feat_idx
@@ -128,7 +130,7 @@ def linear_regression(X_train, y_train):
 
     # 给 X_ori 添加常数列 到第一列
     m, n = X_ori.shape
-    X = np.matrix(np.ones((m, n+1)))
+    X = np.matrix(np.ones((m, n + 1)))
     X[:, 1:] = X_ori
 
     # 转置矩阵*矩阵
@@ -136,7 +138,7 @@ def linear_regression(X_train, y_train):
     # 如果矩阵的不可逆，会造成程序异常
     if np.linalg.det(xTx) == 0.0:
         return None, None
-        #raise NameError('This matrix is singular, cannot do inverse,\ntry increasing the second value of opt')
+        # raise NameError('This matrix is singular, cannot do inverse,\ntry increasing the second value of opt')
     # 最小二乘法求最优解:  w0*1+w1*x1=y
     w = xTx.I * (X.T * y_train)
 
@@ -169,7 +171,5 @@ def err_lmTree(X_train, y_train):
     if w is None and X is None:
         return 'err'
 
-    y_prime = X*w
+    y_prime = X * w
     return np.var(y_prime - y_train)
-
-

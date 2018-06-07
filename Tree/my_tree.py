@@ -50,8 +50,6 @@ class MyTree:
             if feat_idx != 'err':
                 break
 
-            print('1111111111111: ', feat_idx)
-
         # 触底条件: 该点划分为叶子节点，此时 value 为回归系数矩阵
         if feat_idx is None:
             return value
