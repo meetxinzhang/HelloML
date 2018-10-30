@@ -1,34 +1,43 @@
 # import numpy as np
-# #
-# # list = []
-# #
-# a = [[1, 2, 3, 0],
-#      [4, 5, 6, 0],
-#      [7, 8, 9, 0],
-#      [1, 2, 3, 0],
-#      [4, 5, 6, 0]]
-# a = np.matrix(a)
-# b = a[:, :-1]
-# c = a[:, -1]
-# print(b, c)
+# from timeit import default_timer as timer
+# from numba import vectorize
 #
-# ids = [0, 2]
 #
-# # c = np.take(a, ids)
-# # print(c)
+# @vectorize(["float32(float32, float32)"], target='cuda')
+# def VecADD(a, b):
+#     return a+b
 #
-# b = [[1,1,1],
-#      [1,1,1],
-#      [1,1,1],
-#      [1,1,1],
-#      [1,1,1]]
 #
-# list.append(a)
-# list.append(b)
-# list.append(a)
-# list.append(b)
-# print(list)
+# n = 32000000
+# a = np.ones(n, dtype=np.float32)
+# b = np.ones(n, dtype=np.float32)
+# c = np.zeros(n, dtype=np.float32)
 #
-# # sw = np.swapaxes(list, 0, 1)
-# m = np.mean(list, axis=0)
-# print(m)
+# start = timer()
+# C = VecADD(a, b)
+# print(timer() - start, C)
+
+# import pycuda.driver as drv
+# import numpy
+#
+# from pycuda.compiler import SourceModule
+#
+# mod = SourceModule("""
+# __global__  void multiply_them(float *dest, float *a, float *b)
+# {
+#   const int i = threadIdx.x;
+#   dest[i] = a[i] * b[i];
+# }
+# """)
+#
+# multiply_them = mod.get_function("multiply_them")
+#
+# a = numpy.random.randn(400).astype(numpy.float32)
+# b = numpy.random.randn(400).astype(numpy.float32)
+#
+# dest = numpy.zeros_like(a)
+# multiply_them(
+#         drv.Out(dest), drv.In(a), drv.In(b),
+#         block=(400, 1, 1), grid=(1, 1))
+#
+# print(dest - a * b)

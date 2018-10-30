@@ -1,4 +1,5 @@
 import numpy as np
+import numba
 
 
 def split_data(X_train, y_train, feat_idx, value):
@@ -115,18 +116,20 @@ def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, 
     return best_feat_idx, best_feat_val
 
 
+@numba.jit()
 def linear_regression(X_train, y_train):
     """
     获取线性回归系数
     因变量在第0列，其余为自变量
-    :param dataList: 数据集
+    :param X_train: list
+    :param y_train: list
     :return w 回归系数，是一维矩阵
     :return X 自变量矩阵
     :return y 因变量矩阵
     """
-    X_ori = np.matrix(X_train)
+    X_ori = np.matrix(X_train, dtype=np.float32)
     # 这里转置是因为：转换为矩阵后形状变为了(1, n_samles)
-    y_train = np.matrix(y_train)
+    y_train = np.matrix(y_train, dtype=np.float32)
 
     # 给 X_ori 添加常数列 到第一列
     m, n = X_ori.shape
@@ -161,6 +164,7 @@ def leaf_lmTree(X_train, y_train):
     return w
 
 
+@numba.jit()
 def err_lmTree(X_train, y_train):
     """
     对给定数据集进行回归并计算误差

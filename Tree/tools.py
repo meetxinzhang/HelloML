@@ -73,19 +73,21 @@ def load_list_data_and_standardization(filename, n_folds, n_test=1, idx_test=0):
     train_data = np.matrix(train_data)
     test_data = np.matrix(test_data)
 
-    #X_test1 = test_data[:, 1:]
-    X_test1 = test_data[:, :-1]
+    X_test1 = test_data[:, 1:]
+    #X_test1 = test_data[:, :-1]
     X_test1 = X_test1.tolist()
+    X_test1 = standardization(X_test1)
 
-    #y_test1 = test_data[:, 0].tolist()
-    y_test1 = test_data[:, -1].tolist()
+    y_test1 = test_data[:, 0].tolist()
+    #y_test1 = test_data[:, -1].tolist()
 
-    #X_train1 = train_data[:, 1:]
-    X_train1 = train_data[:, :-1]
+    X_train1 = train_data[:, 1:]
+    #X_train1 = train_data[:, :-1]
     X_train1 = X_train1.tolist()
+    X_train1 = standardization(X_train1)
 
-    #y_train1 = train_data[:, 0].tolist()
-    y_train1 = train_data[:, -1].tolist()
+    y_train1 = train_data[:, 0].tolist()
+    #y_train1 = train_data[:, -1].tolist()
 
     return X_train1, y_train1, X_test1, y_test1
 
@@ -140,7 +142,7 @@ def standardization(dataX):
     # meanVal = np.mean(dataX, axis=0) 此同为np的方法,得到Series
     # 求标准差
     stdVal = dataX.std(axis=0)
-    dataTad = (dataX-meanVal)/stdVal
+    dataTad = (abs(dataX-meanVal))/stdVal
     return dataTad.tolist()
 
 

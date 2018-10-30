@@ -1,4 +1,5 @@
 from Tree.args_of_tree import *
+import numba
 
 
 class MyTree:
@@ -67,6 +68,7 @@ class MyTree:
 
         return tree
 
+    @numba.jit()
     def predict_1X_on_linear_moedl_leaf(self, model, one_x):
         """
         预测，一行测试数据 * 回归系数

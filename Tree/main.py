@@ -7,8 +7,8 @@ from sklearn.ensemble import RandomForestRegressor
 if __name__ == '__main__':
     # 载入数据---------------------------------------------------------
     X_train, y_train, X_test, y_test = \
-        load_list_data_and_standardization('lianjia.txt',  # 文件名
-                                           n_folds=10,  # 把数据分成n_folds份
+        load_list_data_and_standardization('all.txt',  # 文件名
+                                           n_folds=5,  # 把数据分成n_folds份
                                            idx_test=0,  # 测试数据从第几份开始
                                            n_test=1)  # 测试数据所占的份数
     # X_train = usePCA(X_train)
@@ -38,12 +38,15 @@ if __name__ == '__main__':
     yHats = forest.predict(X_test)
 
     # # sklearn
-    # forest = RandomForestRegressor(n_estimators=100, min_samples_split=50, n_jobs=10,  max_features='sqrt')
-    # forest.fit(X_train, y_train)
-    # yHats = forest.predict(X_test)
+    sk_forest = RandomForestRegressor(n_estimators=50, min_samples_split=100, n_jobs=10,  max_features='sqrt')
+    sk_forest.fit(X_train, y_train)
+    sk_yHats = forest.predict(X_test)
+    print('sk-learn 结果：')
+    mre(y_test, sk_yHats)
+    r2(y_test, sk_yHats)
 
     print('\n 结果对比： real \t predict \n')
-    for i in zip(yHats, y_test):
+    for i in zip(y_test, yHats):
         print(''.join('%s \t' % s for s in i))
 
     # 评估
