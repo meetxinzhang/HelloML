@@ -145,12 +145,6 @@ def linear_regression(X_train, y_train):
     # 最小二乘法求最优解:  w0*1+w1*x1=y
     w = xTx.I * (X.T * y_train)
 
-    # print('线性回归：')
-    # print(w)
-    # print(X.shape)
-    # print(X)
-    # print(y.shape)
-    # print(y)
     return w, X
 
 

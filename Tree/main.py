@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     forest = MyRandomForest(tree_type='regression',  # 树参数：树类型，暂时只支持LMT，用作回归
                             num_remove_feature=5,  # 树参数：构建树时，随机去掉的特征数量
-                            opt={'err_tolerance': 1, 'n_tolerance': 100},
+                            opt={'err_tolerance': 10, 'n_tolerance': 100},
                             # 树参数：预剪枝用到，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
                             sample_ratio=0.7,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
                             n_tree=50)  # 随机森林参数：树的数量
