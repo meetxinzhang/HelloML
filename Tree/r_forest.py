@@ -105,6 +105,7 @@ class MyRandomForest:
             struct = tree.fit(X_train_item, y_train_item)
             self.forest.append(tree)
 
+            print('该树的特征分裂计数  \n', tree.the_list)
             print('num of tree: ', len(self.forest))
             print(struct)
 

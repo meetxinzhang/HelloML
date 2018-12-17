@@ -17,6 +17,9 @@ class MyTree:
     # right: 右子树指针
     tree = {'feat_idx': None, 'feat_val': None, 'left': None, 'right': None}
 
+    # 列表，在树生长的时候，记录每个特征用于分裂的次数，用于衡量特征的重要性
+    the_list = []
+
     def __init__(self, tree_type='regression', num_remove_feature=0, opt=None):
         self.num_remove_feature = num_remove_feature
         self.tree_type = tree_type
@@ -26,6 +29,10 @@ class MyTree:
             self.opt = opt
 
     def fit(self, X_train, y_train):
+        # 2018/12/17 更改
+        num_feature = np.shape(X_train)[1]
+        self.the_list = np.zeros([num_feature], int)
+
         self.tree = self.recursion_create_tree(X_train, y_train)
         return self.tree
 
@@ -57,6 +64,7 @@ class MyTree:
 
         # 创建一层树结构
         tree = {'feat_idx': feat_idx, 'feat_val': value}
+        self.the_list[feat_idx] += 1
 
         # 递归创建左子树和右子树
         X_left, X_right, y_left, y_right = split_data(X_train, y_train, feat_idx, value)

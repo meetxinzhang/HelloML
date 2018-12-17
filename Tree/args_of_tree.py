@@ -37,7 +37,8 @@ def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, 
     :param opt: [err_tolerance: 最小误差下降值, n_tolerance: 数据切分最小样本数]
     :param num_remove 待随机去掉的特征数目
     :param tree_type 树类型
-    :param dataList 待划分的数据集
+    :param X_train 待划分的数据集
+    :param y_train 待划分的标签集
     :return best_feat_idx: 最佳样本分割列
     :return best_feat_val： 最佳样本分割值
     """
