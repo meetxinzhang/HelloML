@@ -1,5 +1,5 @@
 import numpy as np
-import numba
+from numba import cuda, jit
 
 
 def split_data(X_train, y_train, feat_idx, value):
@@ -117,7 +117,7 @@ def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, 
     return best_feat_idx, best_feat_val
 
 
-@numba.jit()
+@cuda.jit()
 def linear_regression(X_train, y_train):
     """
     获取线性回归系数
@@ -159,7 +159,7 @@ def leaf_lmTree(X_train, y_train):
     return w
 
 
-@numba.jit()
+@jit()
 def err_lmTree(X_train, y_train):
     """
     对给定数据集进行回归并计算误差

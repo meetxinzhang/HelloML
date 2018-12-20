@@ -1,43 +1,213 @@
+# import pycuda.autoinit
+# import pycuda.driver as drv
 # import numpy as np
 # from timeit import default_timer as timer
-# from numba import vectorize
-#
-#
-# @vectorize(["float32(float32, float32)"], target='cuda')
-# def VecADD(a, b):
-#     return a+b
-#
-#
-# n = 32000000
-# a = np.ones(n, dtype=np.float32)
-# b = np.ones(n, dtype=np.float32)
-# c = np.zeros(n, dtype=np.float32)
-#
-# start = timer()
-# C = VecADD(a, b)
-# print(timer() - start, C)
-#
-# import pycuda.driver as drv
-# import numpy
 #
 # from pycuda.compiler import SourceModule
 #
 # mod = SourceModule("""
-# __global__  void multiply_them(float *dest, float *a, float *b)
+# __global__ void func(float *a, float *b, size_t N)
 # {
-#   const int i = threadIdx.x;
-#   dest[i] = a[i] * b[i];
+#   const int i = blockIdx.x * blockDim.x + threadIdx.x;
+#   if (i >= N)
+#   {
+#     return;
+#   }
+#   float temp_a = a[i];
+#   float temp_b = b[i];
+#   a[i] = (temp_a * 10 + 2 ) * ((temp_b + 2) * 10 - 5 ) * 5;
+#   // a[i] = a[i] + b[i];
 # }
 # """)
 #
-# multiply_them = mod.get_function("multiply_them")
+# func = mod.get_function("func")
 #
-# a = numpy.random.randn(400).astype(numpy.float32)
-# b = numpy.random.randn(400).astype(numpy.float32)
 #
-# dest = numpy.zeros_like(a)
-# multiply_them(
-#         drv.Out(dest), drv.In(a), drv.In(b),
-#         block=(400, 1, 1), grid=(1, 1))
+# def test(N):
+#     # N = 1024 * 1024 * 90   # float: 4M = 1024 * 1024
 #
-# print(dest - a * b)
+#     print("N = %d" % N)
+#
+#     N = np.int32(N)
+#
+#     a = np.random.randn(N).astype(np.float32)
+#     b = np.random.randn(N).astype(np.float32)
+#     # copy a to aa
+#     aa = np.empty_like(a)
+#     aa[:] = a
+#     # GPU run
+#     nTheads = 256
+#     nBlocks = int((N + nTheads - 1) / nTheads)
+#     start = timer()
+#     func(
+#         drv.InOut(a), drv.In(b), N,
+#         block=(nTheads, 1, 1), grid=(nBlocks, 1))
+#     run_time = timer() - start
+#     print("gpu run time %f seconds " % run_time)
+#     # cpu run
+#     start = timer()
+#     aa = (aa * 10 + 2) * ((b + 2) * 10 - 5) * 5
+#     run_time = timer() - start
+#
+#     print("cpu run time %f seconds " % run_time)
+#
+#     # check result
+#     r = a - aa
+#     print(min(r), max(r))
+#
+#
+# def main():
+#     for n in range(1, 10):
+#         N = 1024 * 1024 * (n * 10)
+#         print("------------%d---------------" % n)
+#         test(N)
+#
+#
+# if __name__ == '__main__':
+#     main()
+
+
+
+
+
+#
+# '''
+# Matrix multiplication sample, some numba and CUDA testing code
+# '''
+#
+# import math
+# import time
+# import numpy as np
+# from numba import cuda, jit, float64
+#
+# TPB = 16  # thread per block
+#
+#
+# def cpu_mat_mul(A, B, C):
+#     '''matrix mulplication on cpu, O(n^3) implementation
+#     '''
+#     for i in range(C.shape[0]):
+#         for j in range(C.shape[1]):
+#             summation = 0
+#             for k in range(A.shape[1]):
+#                 summation += A[i, k] * B[k, j]
+#             C[i, j] = summation
+#
+#
+# @jit
+# def cpu_mat_mul_jit(A, B, C):
+#     '''matrix mulplication on cpu O(n^3) implementation with @jit decocation
+#     '''
+#     for i in range(C.shape[0]):
+#         for j in range(C.shape[1]):
+#             summation = 0
+#             for k in range(A.shape[1]):
+#                 summation += A[i, k] * B[k, j]
+#             C[i, j] = summation
+#
+#
+# @cuda.jit
+# def mat_mul_naive_kernal(A, B, C):
+#     '''matrix multiplication on gpu, naive method using global device memory
+#     '''
+#     i, j = cuda.grid(2)
+#     if i < C.shape[0] and j < C.shape[1]:
+#         summation = 0
+#         for k in range(A.shape[1]):
+#             summation += A[i, k] * B[k, j]
+#         C[i, j] = summation
+#
+#
+# @cuda.jit
+# def mat_mul_shared_kernal(A, B, C):
+#     '''matrix multiplication on gpu, optimized version using shared memory.
+#     '''
+#     s_A = cuda.shared.array((TPB, TPB), dtype=float64)  # s_ --> shared
+#     s_B = cuda.shared.array((TPB, TPB), dtype=float64)
+#     x, y = cuda.grid(2)
+#     tx = cuda.threadIdx.x
+#     ty = cuda.threadIdx.y
+#     bw = cuda.blockDim.x
+#     bh = cuda.blockDim.y
+#     # print((x, y), (tx, ty), (bx, by), (bw, bh))
+#
+#     if x >= C.shape[0] or y >= C.shape[1]:
+#         return
+#
+#     tmp = 0
+#     for i in range(int(A.shape[1] / TPB)):
+#         # print((x, y), (tx, ty), i)
+#         s_A[tx, ty] = A[x, ty + bw * i]
+#         s_B[tx, ty] = B[tx + bh * i, y]
+#         cuda.syncthreads()
+#
+#         for j in range(TPB):
+#             tmp += s_A[tx, j] * s_B[j, ty]
+#
+#         cuda.syncthreads()
+#     C[x, y] = tmp
+#
+#
+# def host_naive(A, B, C):
+#     '''host code for calling naive kernal
+#     '''
+#     d_A = cuda.to_device(A)  # d_ --> device
+#     d_B = cuda.to_device(B)
+#     d_C = cuda.device_array(C.shape, np.float64)
+#
+#     threadsperblock = (TPB, TPB)
+#     blockspergrid_x = math.ceil(A.shape[0] / threadsperblock[0])
+#     blockspergrid_y = math.ceil(B.shape[1] / threadsperblock[1])
+#     blockspergrid = (blockspergrid_x, blockspergrid_y)
+#
+#     mat_mul_naive_kernal[blockspergrid, threadsperblock](d_A, d_B, d_C)
+#
+#     return d_C.copy_to_host()
+#
+#
+# def host_optimized(A, B, C):
+#     '''host code for calling naive kernal
+#     '''
+#     d_A = cuda.to_device(A)  # d_ --> device
+#     d_B = cuda.to_device(B)
+#     d_C = cuda.device_array(C.shape, np.float64)
+#
+#     threadsperblock = (TPB, TPB)
+#     blockspergrid_x = math.ceil(A.shape[0] / threadsperblock[0])
+#     blockspergrid_y = math.ceil(B.shape[1] / threadsperblock[1])
+#     blockspergrid = (blockspergrid_x, blockspergrid_y)
+#
+#     mat_mul_shared_kernal[blockspergrid, threadsperblock](d_A, d_B, d_C)
+#
+#     return d_C.copy_to_host()
+#
+#
+# def main():
+#     '''main
+#     '''
+#     A = np.full((TPB * 4, TPB * 6), 0.5, dtype=np.float64)
+#     B = np.full((TPB * 6, TPB * 2), 2, dtype=np.float64)
+#     C = np.full((TPB * 4, TPB * 2), 0, dtype=np.float64)
+#
+#     start = time.time()
+#     cpu_mat_mul(A, B, C)
+#     print('cpu mat mul:', time.time() - start)
+#
+#     start = time.time()
+#     cpu_mat_mul_jit(A, B, C)
+#     print('cpu mat mul with numba.jit:', time.time() - start)
+#
+#     start = time.time()
+#     ans = host_naive(A, B, C)
+#     print('gpu mat mul global:', time.time() - start)
+#     print(ans)
+#
+#     start = time.time()
+#     ans = host_optimized(A, B, C)
+#     print('gpu mat mul shared:', time.time() - start)
+#     print(ans)
+#
+#
+# if __name__ == '__main__':
+#     main()
+
