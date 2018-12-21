@@ -1,4 +1,5 @@
 from Tree.args_of_tree import *
+import numba
 import Tree.gpu_numba as gpu
 
 
@@ -90,8 +91,15 @@ class MyTree:
         X = np.mat(np.ones((1, n + 1)))
         X[:, 1: n + 1] = one_x
 
+        model = np.matrix(model)
         # return float(X * model)
-        return float(gpu.host_naive(X, model))
+        # y_prime = float(gpu.host_naive(X, model))
+        # 当为矩阵时，multiply 计算数量积
+
+        y_prime = np.multiply(model, X)
+        y_prime = np.sum(y_prime)
+
+        return y_prime
 
     def predict_1X_on_tree(self, tree, one_x):
         """
@@ -124,6 +132,7 @@ class MyTree:
             # else:
             #     return predict_faction(tree['right'], one_x)
 
+    @jit()
     def predict(self, X_test):
         """
         计算全部测试结果

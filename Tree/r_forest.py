@@ -1,4 +1,5 @@
 import numpy as np
+from numba import jit
 import random as rd
 
 from Tree.my_tree import MyTree
@@ -84,6 +85,7 @@ class MyRandomForest:
     #             values = np.c_[values, dataSet[:, index]]
     #     return values.tolist()
 
+    @jit()
     def fit(self, X_train, y_train):
         """
         :param X_train: 训练数据
@@ -113,6 +115,7 @@ class MyRandomForest:
         # self.struct = np.sum(self.struct, axis=1)/self.n_tree
         # return self.struct
 
+    @jit()
     def predict(self, X_test):
         m, n = np.shape(X_test)
 
@@ -126,4 +129,4 @@ class MyRandomForest:
         # 采取等权值投票，即均值
         pre_value = np.sum(yHats, axis=1) / self.n_tree
         return pre_value
-pass
+    pass

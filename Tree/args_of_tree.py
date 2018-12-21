@@ -1,8 +1,10 @@
 import numpy as np
+import sklearn as skl
 from numba import cuda, jit
 import Tree.gpu_numba as gpu
 
 
+@jit()
 def split_data(X_train, y_train, feat_idx, value):
     """
     根据给定的特征编号和特征值对数据集进行分割
@@ -32,6 +34,7 @@ def split_data(X_train, y_train, feat_idx, value):
     return X_left, X_right, y_left, y_right
 
 
+@jit()
 def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, opt=None):
     """
     选取最佳分割特征和特征值
@@ -138,20 +141,24 @@ def linear_regression(X_train, y_train):
     X = np.matrix(np.ones((m, n + 1)))
     X[:, 1:] = X_ori
 
-    # 转置矩阵*矩阵
-    # xTx2 = X.T * X
-    xTx = gpu.host_naive(X.T, X)
-    xTx = np.matrix(xTx)
+    # # 转置矩阵*矩阵
+    # # xTx2 = X.T * X
+    # xTx = gpu.host_naive(X.T, X)
+    # xTx = np.matrix(xTx)
+    #
+    # # 如果矩阵的不可逆，会造成程序异常
+    # if np.linalg.det(xTx) == 0.0:
+    #     return None, None
+    #     # raise NameError('This matrix is singular, cannot do inverse,\ntry increasing the second value of opt')
+    # # 最小二乘法求最优解:  w0*1+w1*x1=y
+    # # w = xTx.I * (X.T * y_train)
+    # temp = gpu.host_naive(X.T, y_train)
+    # w = gpu.host_naive(xTx.I, temp)
+    # w = np.matrix(w)
 
-    # 如果矩阵的不可逆，会造成程序异常
-    if np.linalg.det(xTx) == 0.0:
-        return None, None
-        # raise NameError('This matrix is singular, cannot do inverse,\ntry increasing the second value of opt')
-    # 最小二乘法求最优解:  w0*1+w1*x1=y
-    # w = xTx.I * (X.T * y_train)
-    temp = gpu.host_naive(X.T, y_train)
-    w = gpu.host_naive(xTx.I, temp)
-    w = np.matrix(w)
+    re = skl.linear_model.LinearRegression()
+    re.fit(X, y_train)
+    w = re.coef_
 
     return w, X
 
@@ -173,10 +180,15 @@ def err_lmTree(X_train, y_train):
     :param dataList: 数据集
     :return: 见 def linear_regression
     """
-    w, X = linear_regression(X_train, y_train)
-    if w is None and X is None:
-        return 'err'
+    # w, X = linear_regression(X_train, y_train)
+    # if w is None and X is None:
+    #     return 'err'
+    #
+    # # y_prime = X * w
+    # y_prime = gpu.host_naive(X, w)
 
-    # y_prime = X * w
-    y_prime = gpu.host_naive(X, w)
+    re = skl.linear_model.LinearRegression()
+    re.fit(X_train, y_train)
+    y_prime = re.predict(X_train)
+
     return np.var(y_prime - y_train)

@@ -3,7 +3,7 @@ import numpy as np
 from sklearn import datasets, linear_model
 
 
-dataPath = r"aaa.csv"
+dataPath = r"all.txt"
 deliverData = genfromtxt(dataPath, delimiter=',')
 
 print("data")

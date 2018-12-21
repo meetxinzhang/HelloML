@@ -3,6 +3,7 @@ from Tree.r_forest import MyRandomForest
 from Tree.tools import *
 
 from sklearn.ensemble import RandomForestRegressor
+from sklearn import linear_model
 
 if __name__ == '__main__':
     # 载入数据---------------------------------------------------------
@@ -30,10 +31,10 @@ if __name__ == '__main__':
 
     forest = MyRandomForest(tree_type='regression',  # 树参数：树类型，暂时只支持LMT，用作回归
                             num_remove_feature=5,  # 树参数：构建树时，随机去掉的特征数量
-                            opt={'err_tolerance': 5, 'n_tolerance': 100},
+                            opt={'err_tolerance': 1, 'n_tolerance': 100},
                             # 树参数：预剪枝用到，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
                             sample_ratio=0.7,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
-                            n_tree=10)  # 随机森林参数：树的数量
+                            n_tree=50)  # 随机森林参数：树的数量
     forest.fit(X_train, y_train)
     yHats = forest.predict(X_test)
 
@@ -82,4 +83,8 @@ if __name__ == '__main__':
     # print('预测值为：', y_pre)
     # print('真实值为：', y_te)
     # print('acc: ', accuracy_score(y_te, y_pre, normalize=True, sample_weight=None))
+
+    # re = linear_model.LinearRegression()
+    # re.fit(X_train, y_train)
+    # print(re.coef_)
     pass
