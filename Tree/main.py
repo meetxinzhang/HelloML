@@ -33,17 +33,9 @@ if __name__ == '__main__':
                             opt={'err_tolerance': 5, 'n_tolerance': 100},
                             # 树参数：预剪枝用到，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
                             sample_ratio=0.7,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
-                            n_tree=50)  # 随机森林参数：树的数量
+                            n_tree=10)  # 随机森林参数：树的数量
     forest.fit(X_train, y_train)
     yHats = forest.predict(X_test)
-
-    # # sklearn
-    sk_forest = RandomForestRegressor(n_estimators=50, min_samples_split=100, n_jobs=10,  max_features='sqrt')
-    sk_forest.fit(X_train, y_train)
-    sk_yHats = forest.predict(X_test)
-    print('sk-learn 结果：')
-    mre(y_test, sk_yHats)
-    r2(y_test, sk_yHats)
 
     print('\n 结果对比： real \t predict \n')
     for i in zip(y_test, yHats):
@@ -53,6 +45,14 @@ if __name__ == '__main__':
     mre(y_test, yHats)
     r2(y_test, yHats)
 
+    # # sklearn
+    sk_forest = RandomForestRegressor(n_estimators=50, min_samples_split=100, n_jobs=10, max_features='sqrt')
+    sk_forest.fit(X_train, y_train)
+    sk_yHats = sk_forest.predict(X_test)
+    print('sk-learn 结果：')
+    mre(y_test, sk_yHats)
+    r2(y_test, sk_yHats)
+
     # --------------------使用深度森林进行训练预测------------------------
     # iris = load_list_data('iris.txt')
     # iris = np.matrix(iris)
@@ -60,6 +60,7 @@ if __name__ == '__main__':
     # X_iris = np.delete(iris, -1, axis=1)
     # X_iris = np.array(X_iris)
     # y_iris = np.ravel(np.array(y_iris))
+
     #
     # X_tr, X_te, y_tr, y_te = train_test_split(X_iris, y_iris, test_size=0.33)
     #
