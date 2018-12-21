@@ -1,5 +1,5 @@
 from Tree.args_of_tree import *
-import numba
+import Tree.gpu_numba as gpu
 
 
 class MyTree:
@@ -76,7 +76,6 @@ class MyTree:
 
         return tree
 
-    @numba.jit()
     def predict_1X_on_linear_moedl_leaf(self, model, one_x):
         """
         预测，一行测试数据 * 回归系数
@@ -91,7 +90,8 @@ class MyTree:
         X = np.mat(np.ones((1, n + 1)))
         X[:, 1: n + 1] = one_x
 
-        return float(X * model)
+        # return float(X * model)
+        return float(gpu.host_naive(X, model))
 
     def predict_1X_on_tree(self, tree, one_x):
         """

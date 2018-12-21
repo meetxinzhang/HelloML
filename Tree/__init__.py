@@ -70,6 +70,7 @@
 
 
 
+
 #
 # '''
 # Matrix multiplication sample, some numba and CUDA testing code
@@ -148,9 +149,18 @@
 #     C[x, y] = tmp
 #
 #
-# def host_naive(A, B, C):
+# def host_naive(A, B):
 #     '''host code for calling naive kernal
 #     '''
+#     A = np.array(A)
+#     B = np.array(B)
+#
+#     i = A.shape[0]
+#     j = A.shape[1]
+#     m = B.shape[0]
+#     n = B.shape[1]
+#     C = np.full((TPB * i, TPB * n), 0, dtype=np.float64)
+#
 #     d_A = cuda.to_device(A)  # d_ --> device
 #     d_B = cuda.to_device(B)
 #     d_C = cuda.device_array(C.shape, np.float64)
@@ -165,9 +175,18 @@
 #     return d_C.copy_to_host()
 #
 #
-# def host_optimized(A, B, C):
+# def host_optimized(A, B):
 #     '''host code for calling naive kernal
 #     '''
+#     A = np.array(A)
+#     B = np.array(B)
+#
+#     i = A.shape[0]
+#     j = A.shape[1]
+#     m = B.shape[0]
+#     n = B.shape[1]
+#     C = np.full((TPB * i, TPB * n), 0, dtype=np.float64)
+#
 #     d_A = cuda.to_device(A)  # d_ --> device
 #     d_B = cuda.to_device(B)
 #     d_C = cuda.device_array(C.shape, np.float64)
@@ -189,23 +208,29 @@
 #     B = np.full((TPB * 6, TPB * 2), 2, dtype=np.float64)
 #     C = np.full((TPB * 4, TPB * 2), 0, dtype=np.float64)
 #
-#     start = time.time()
-#     cpu_mat_mul(A, B, C)
-#     print('cpu mat mul:', time.time() - start)
+#     # start = time.time()
+#     # cpu_mat_mul(A, B, C)
+#     # print('cpu mat mul:', time.time() - start)
+#     #
+#     # start = time.time()
+#     # cpu_mat_mul_jit(A, B, C)
+#     # print('cpu mat mul with numba.jit:', time.time() - start)
+#     #
+#     # start = time.time()
+#     # ans = host_naive(A, B)
+#     # print('gpu mat mul global:', time.time() - start)
+#     # print(ans)
 #
 #     start = time.time()
-#     cpu_mat_mul_jit(A, B, C)
-#     print('cpu mat mul with numba.jit:', time.time() - start)
-#
-#     start = time.time()
-#     ans = host_naive(A, B, C)
-#     print('gpu mat mul global:', time.time() - start)
-#     print(ans)
-#
-#     start = time.time()
-#     ans = host_optimized(A, B, C)
+#     A = np.matrix(A)
+#     B = np.matrix(B)
+#     print(A)
+#     print(B)
+#     aaa = A * B
+#     ans = host_optimized(A, B)
 #     print('gpu mat mul shared:', time.time() - start)
 #     print(ans)
+#     print(aaa)
 #
 #
 # if __name__ == '__main__':

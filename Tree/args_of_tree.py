@@ -1,5 +1,6 @@
 import numpy as np
 from numba import cuda, jit
+import Tree.gpu_numba as gpu
 
 
 def split_data(X_train, y_train, feat_idx, value):
@@ -117,7 +118,7 @@ def choose_best_feature(X_train, y_train, tree_type='regression', num_remove=0, 
     return best_feat_idx, best_feat_val
 
 
-@cuda.jit()
+# @cuda.jit()
 def linear_regression(X_train, y_train):
     """
     获取线性回归系数
@@ -128,9 +129,9 @@ def linear_regression(X_train, y_train):
     :return X 自变量矩阵
     :return y 因变量矩阵
     """
-    X_ori = np.matrix(X_train, dtype=np.float32)
+    X_ori = np.matrix(X_train, dtype=np.float64)
     # 这里转置是因为：转换为矩阵后形状变为了(1, n_samles)
-    y_train = np.matrix(y_train, dtype=np.float32)
+    y_train = np.matrix(y_train, dtype=np.float64)
 
     # 给 X_ori 添加常数列 到第一列
     m, n = X_ori.shape
@@ -138,13 +139,19 @@ def linear_regression(X_train, y_train):
     X[:, 1:] = X_ori
 
     # 转置矩阵*矩阵
-    xTx = X.T * X
+    # xTx2 = X.T * X
+    xTx = gpu.host_naive(X.T, X)
+    xTx = np.matrix(xTx)
+
     # 如果矩阵的不可逆，会造成程序异常
     if np.linalg.det(xTx) == 0.0:
         return None, None
         # raise NameError('This matrix is singular, cannot do inverse,\ntry increasing the second value of opt')
     # 最小二乘法求最优解:  w0*1+w1*x1=y
-    w = xTx.I * (X.T * y_train)
+    # w = xTx.I * (X.T * y_train)
+    temp = gpu.host_naive(X.T, y_train)
+    w = gpu.host_naive(xTx.I, temp)
+    w = np.matrix(w)
 
     return w, X
 
@@ -170,5 +177,6 @@ def err_lmTree(X_train, y_train):
     if w is None and X is None:
         return 'err'
 
-    y_prime = X * w
+    # y_prime = X * w
+    y_prime = gpu.host_naive(X, w)
     return np.var(y_prime - y_train)
