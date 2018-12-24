@@ -30,10 +30,10 @@ if __name__ == '__main__':
     # --------------------使用随机森林进行训练预测------------------------
 
     forest = MyRandomForest(tree_type='regression',  # 树参数：树类型，暂时只支持LMT，用作回归
-                            num_remove_feature=5,  # 树参数：构建树时，随机去掉的特征数量
-                            opt={'err_tolerance': 1, 'n_tolerance': 100},
+                            num_remove_feature=3,  # 树参数：构建树时，随机去掉的特征数量
+                            opt={'err_tolerance': 0.8, 'n_tolerance': 100},
                             # 树参数：预剪枝用到，'err_tolerance': 左右子树最小允许误差，'n_tolerance'：左右子树最小允许样本数
-                            sample_ratio=0.7,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
+                            sample_ratio=0.9,  # 随机森林参数：构建树的时候随机抽样所占总样本的比例
                             n_tree=50)  # 随机森林参数：树的数量
     forest.fit(X_train, y_train)
     yHats = forest.predict(X_test)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     # # sklearn
     sk_forest = RandomForestRegressor(n_estimators=50, min_samples_split=100, n_jobs=10, max_features='sqrt')
-    sk_forest.fit(X_train, y_train)
+    sk_forest.fit(X_train, np.ravel(y_train))
     sk_yHats = sk_forest.predict(X_test)
     print('sk-learn 结果：')
     mre(y_test, sk_yHats)
