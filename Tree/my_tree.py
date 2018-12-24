@@ -92,8 +92,8 @@ class MyTree:
         X[:, 1: n + 1] = one_x
         if type(model) != np.matrix.__class__:
             raise NameError('my_tree: model is not a matrix')
-        # return float(X * model)
-        # y_prime = float(gpu.host_naive(X, model))
+        # return np.sum(X * model)
+        # y_prime = np.sum(gpu.host_naive(X, model))
         # 当为矩阵时，multiply 计算数量积
 
         y_prime = np.multiply(model, X)
