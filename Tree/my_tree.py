@@ -90,8 +90,8 @@ class MyTree:
         n = np.shape(one_x)[1]
         X = np.mat(np.ones((1, n + 1)))
         X[:, 1: n + 1] = one_x
-
-        model = np.matrix(model)
+        if type(model) != np.matrix.__class__:
+            raise NameError('my_tree: model is not a matrix')
         # return float(X * model)
         # y_prime = float(gpu.host_naive(X, model))
         # 当为矩阵时，multiply 计算数量积

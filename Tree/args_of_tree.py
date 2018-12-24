@@ -160,6 +160,8 @@ def linear_regression(X_train, y_train):
     re.fit(X, y_train)
     w = re.coef_
 
+    w = np.matrix(w)
+
     return w, X
 
 
@@ -187,8 +189,15 @@ def err_lmTree(X_train, y_train):
     # # y_prime = X * w
     # y_prime = gpu.host_naive(X, w)
 
-    re = skl.linear_model.LinearRegression()
-    re.fit(X_train, y_train)
-    y_prime = re.predict(X_train)
+    # re = skl.linear_model.LinearRegression()
+    # re.fit(X_train, y_train)
+    # y_prime = re.predict(X_train)
 
-    return np.var(y_prime - y_train)
+    w, X = linear_regression(X_train, y_train)
+
+    y_prime = np.multiply(w, X)
+    y_prime = np.sum(y_prime)
+
+    ss = np.var(y_prime - y_train)
+
+    return ss
