@@ -73,7 +73,7 @@ def load_list_data_and_standardization(filename, n_folds, n_test=1, idx_test=0):
     train_data = np.matrix(train_data)
     test_data = np.matrix(test_data)
 
-    X_test1 = test_data[:, 1:]
+    X_test1 = test_data[:, 2:14]
     # X_test1 = test_data[:, :-1]
     X_test1 = X_test1.tolist()
     X_test1 = standardization(X_test1)
@@ -82,7 +82,7 @@ def load_list_data_and_standardization(filename, n_folds, n_test=1, idx_test=0):
     y_test1 = standardization(y_test1)
     # y_test1 = test_data[:, -1].tolist()
 
-    X_train1 = train_data[:, 1:]
+    X_train1 = train_data[:, 2:14]
     # X_train1 = train_data[:, :-1]
     X_train1 = X_train1.tolist()
     X_train1 = standardization(X_train1)
