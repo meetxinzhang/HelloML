@@ -1,5 +1,5 @@
 from sklearn import metrics
-from PCA.main import outPut
+from principal_component_analysis.main import output
 import numpy as np
 import random as rd
 
@@ -121,11 +121,11 @@ def cross_validation_split(dataSet, n_folds):
 
 
 def usePCA(dataX):
-    # 使用 PCA 将数据变为线性无关，影响预测准确性，弃用
+    # 使用 principal_component_analysis 将数据变为线性无关，影响预测准确性，弃用
     # 分割出自变量，因为PCA只处理自变量
     _, n = np.shape(dataX)
 
-    pca_X = outPut(dataX, n)
+    pca_X = output(dataX, n)
 
     return pca_X.tolist()
 

@@ -2,7 +2,7 @@ import numpy as np
 from numba import jit
 import random as rd
 
-from Tree.my_tree import MyTree
+from tree.my_tree import MyTree
 
 
 class MyRandomForest:

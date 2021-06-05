@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
+
 def standardization(dataX):
     """
     0均值标准化(Z-score standardization)
@@ -9,32 +10,32 @@ def standardization(dataX):
     :return:
     """
     # 我们的数据变量按列进行排列(即一行为一个样本),按列求均值，即求各个特征的均值
-    meanVal = dataX.mean(axis=0)
-    # meanVal = np.mean(dataX, axis=0) 此同为np的方法,得到Series
+    mean_val = dataX.mean(axis=0)
+    # mean_val = np.mean(dataX, axis=0) 此同为np的方法,得到Series
     # 求标准差
-    stdVal = dataX.std(axis=0)
-    datasTad = (dataX-meanVal)/stdVal
-    return datasTad
+    std_val = dataX.std(axis=0)
+    data_tad = (dataX - mean_val) / std_val
+    return data_tad
 
 
-def pcan(dataX, datasTad, n):
+def pcan(dataX, data_tad, n):
     # 协方差矩阵
-    dataCov = datasTad.cov()
+    data_cov = data_tad.cov()
     # 相关系数矩阵
-    # dataCov = datasTad.corr()
+    # data_cov = datasTad.corr()
 
-    newData1 = np.array(dataCov)
+    new_data1 = np.array(data_cov)
     # 求得特征值，特征向量
-    eigenValue, eigenVector = np.linalg.eig(newData1)
+    eigen_value, eigen_vector = np.linalg.eig(new_data1)
     # 特征值下标从小到大的排列顺序
-    sorceEigenValue = np.argsort(eigenValue)
+    source_eigen_value = np.argsort(eigen_value)
     # 最大的n个特征值的下标
-    nPcaEigenVector = sorceEigenValue[-n:]
+    n_pca_eigen_vector = source_eigen_value[-n:]
     # 选取特征值对应的特征向量
-    pcaEigenVector = eigenVector[nPcaEigenVector]
+    pca_eigen_vector = eigen_vector[n_pca_eigen_vector]
     # 得到降维后的数据
-    PCAX = np.dot(dataX, pcaEigenVector.T)
-    return PCAX, pcaEigenVector
+    pcax = np.dot(dataX, pca_eigen_vector.T)
+    return pcax, pca_eigen_vector
 
 
 def load_data(filename):
@@ -43,33 +44,33 @@ def load_data(filename):
     :param filename: 文件地址
     :return: list 矩阵
     """
-    dataList = []
+    data_list = []
     with open(filename, 'r') as f:
         for line in f:
             line_data = [float(data) for data in line.split('\t')]
-            dataList.append(line_data)
+            data_list.append(line_data)
 
-    print(np.shape(dataList))
-    return dataList
+    print(np.shape(data_list))
+    return data_list
 
 
-def outPut(dataList, dim):
+def output(data_list, dim):
     # 导入数据，切记不含因变量。我们在此构造df1数据，此数据变量间没有一定的相关性，只做计算演示。
-    df1 = np.array(dataList)
+    df1 = np.array(data_list)
 
     # # 去掉第一列因变量
     # df1 = df1[:, 1:]
 
     df1 = pd.DataFrame(df1)
-    datasTad = standardization(df1)
+    data_tad = standardization(df1)
     # 选取主成份
-    PCAX, pcaEigenVector = pcan(df1, datasTad, dim)
+    pcax, pca_eigen_vector = pcan(df1, data_tad, dim)
 
     print('选取的特征向量：')
-    print(pcaEigenVector, end='\n')
+    print(pca_eigen_vector, end='\n')
     print('降维后的数据：')
-    print(PCAX, end='\n')
-    return PCAX
+    print(pcax, end='\n')
+    return pcax
 
 
 if __name__ == "__main__":

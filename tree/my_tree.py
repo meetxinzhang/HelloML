@@ -1,6 +1,6 @@
-from Tree.args_of_tree import *
+from tree.args_of_tree import *
 import numba
-import Tree.gpu_numba as gpu
+import tree.gpu_numba as gpu
 
 
 class MyTree:

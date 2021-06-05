@@ -2,7 +2,7 @@
 
 import pandas as pd
 import numpy as np
-from KMeans.k_means import KMeansClassifier
+from k_means.k_means import KMeansClassifier
 import matplotlib.pyplot as plt
 
 

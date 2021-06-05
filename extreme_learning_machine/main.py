@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def loadData():
+def load_data():
     """
     加载本地数据
     :return:
@@ -27,7 +27,7 @@ def g(tempH):
     return H
 
 
-train_x, train_y = loadData()
+train_x, train_y = load_data()
 
 [N, n] = train_x.shape
 L = 15

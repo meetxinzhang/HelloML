@@ -1,6 +1,6 @@
-from Tree.my_tree import MyTree
-from Tree.r_forest import MyRandomForest
-from Tree.tools import *
+from tree.my_tree import MyTree
+from tree.r_forest import MyRandomForest
+from tree.tools import *
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import linear_model

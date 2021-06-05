@@ -1,7 +1,7 @@
 import numpy as np
 import sklearn as skl
 from numba import cuda, jit
-import Tree.gpu_numba as gpu
+import tree.gpu_numba as gpu
 
 
 @jit()
