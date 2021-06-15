@@ -1,7 +1,5 @@
 # HelloML
-机器学习相关算法
-
-避免使用第三方库，造轮子学习
+Algorithms implementation, most of they are about machine learning.
 
 ## contents
 
@@ -15,6 +13,7 @@ principal component analysis
 
 ### circle_packing
 `Solve circle packing problem use Newton laws`
+
 ### tree
 `use linear regression in tree node`
 
