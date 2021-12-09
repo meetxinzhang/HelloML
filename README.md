@@ -12,16 +12,13 @@ naive bayes
 principal component analysis
 
 circle_packing
-`
-Solve circle packing problem use Newton laws
-`
+
+###### Solve circle packing problem use Newton laws
 
 tree
-`
-use linear regression in tree node
-`
+
+###### use linear regression in tree node
 
 regression
-`
-including multiple regression and step-wise
-`
+
+###### including multiple regression and step-wise
