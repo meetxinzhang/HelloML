@@ -1,5 +1,5 @@
 # HelloML
-Algorithm's implementation with package, especially machine learning.
+Algorithm's implementation without package, especially machine learning.
 
 ## contents
 
