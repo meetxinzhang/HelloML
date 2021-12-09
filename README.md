@@ -3,22 +3,25 @@ Algorithm's implementation with package, especially machine learning.
 
 ## contents
 
-extreme learning machine
+BP Neural Network
+###### The original and the simplest version of Neural Networks
+
+Extreme Learning Machine
 
 k-means
 
-naive bayes
+Naive bayes
 
-principal component analysis
+Principal Component Analysis
 
-circle_packing
+Circle Packing
 
 ###### Solve circle packing problem use Newton laws
 
-tree
+Tree & Random Forest
 
-###### use linear regression in tree node
+###### use linear regression in each leaf node
 
-regression
+Regression
 
 ###### including multiple regression and step-wise
