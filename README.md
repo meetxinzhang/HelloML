@@ -18,7 +18,7 @@ Circle Packing
 
 ###### Solve circle packing problem use Newton laws
 
-![image](https://github.com/MeetXinZhang/_my_image_hub/blob/main/Peek%202021-06-05%2016-30.gif)
+![image](https://github.com/MeetXinZhang/_my_image_hub/blob/main/SPIKE-ACE2.gif)
 
 Tree & Random Forest
 
