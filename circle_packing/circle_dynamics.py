@@ -94,16 +94,16 @@ class Pack:
     def check_borders(self, circle):
         in_container = True
         orientation = np.array([0, 0])  # orientation of reaction force which perpendicular to collision surface
-        if circle.x <= 0 + circle.r:
+        if circle._x <= 0 + circle.r:
             orientation = np.add([1, 0], orientation)
             in_container = False
-        if circle.x >= self.right_border - circle.r:
+        if circle._x >= self.right_border - circle.r:
             orientation = np.add([-1, 0], orientation)
             in_container = False
-        if circle.y <= 0 + circle.r:
+        if circle._y <= 0 + circle.r:
             orientation = np.add([0, 1], orientation)
             in_container = False
-        if circle.y >= self.upper_border - circle.r:
+        if circle._y >= self.upper_border - circle.r:
             orientation = np.add([0, -1], orientation)
             in_container = False
         react_orientation = self._normalize(orientation) * self.collision_rate
@@ -144,8 +144,8 @@ class Pack:
         return steer
 
     def _distance_circles(self, c1, c2):
-        x1, y1 = c1.x, c1.y
-        x2, y2 = c2.x, c2.y
+        x1, y1 = c1._x, c1._y
+        x2, y2 = c2._x, c2._y
         dist = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
         return dist
 

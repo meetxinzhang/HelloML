@@ -1,21 +1,29 @@
 # HelloML
-机器学习相关算法
-
-避免使用第三方库，造轮子学习
+Algorithm's implementation without package, especially for machine learning.
 
 ## contents
 
-extreme learning machine
+BP Neural Network
+###### The original and the simplest version of Neural Networks
+
+Extreme Learning Machine
 
 k-means
 
-naive bayes
+Naive bayes
 
-principal component analysis
+Principal Component Analysis
 
-### circle_packing
-`Solve circle packing problem use Newton laws`
-### tree
-`use linear regression in tree node`
+Circle Packing
 
-regression, including multiple regression and step-wise
+###### Solve circle packing problem use Newton laws
+
+![image](https://github.com/MeetXinZhang/_my_image_hub/blob/main/SPIKE-ACE2.gif)
+
+Tree & Random Forest
+
+###### use linear regression in each leaf node
+
+Regression
+
+###### including multiple regression and step-wise
