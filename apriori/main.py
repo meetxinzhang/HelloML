@@ -61,7 +61,6 @@ def apriori(ts, mins, items):
     # for 2-item subset:
 
 
-
     print(sups_1)
     sups = []
     return sups
