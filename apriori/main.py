@@ -59,7 +59,7 @@ def apriori(ts, mins, items):
     sups_1 = [sum(c) for c in columns if sum(c) >= mins]  # matrix addition in column dimension
 
     # for 2-item subset:
-    
+
 
 
     print(sups_1)
