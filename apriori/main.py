@@ -16,6 +16,7 @@ $ python main.py -i example_database.txt -mins 3 -o output_file_path.txt
 
 import os
 import argparse
+from itertools import combinations
 
 parser = argparse.ArgumentParser(description='interface to run my Assignment 2: Apriori demo.')
 parser.add_argument('-i', required=True, type=str, help=' Full local path of input, must be .txt file.')
@@ -23,47 +24,68 @@ parser.add_argument('-o', default='results.txt', type=str, help=' Full local pat
 parser.add_argument('-mins', default=3, type=int, help=' The mini-support. default is 3')
 
 
-def apriori(ts, mins, items):
+def apriori(tsc: list[list[int]], mins: int, items: list[int]):
     """Calculate the support of Apriori algorithm. My calculation involve only matrix addition and multipy, that can be
     accelerated by GPU in big data situation. Please Note that here I have to use many for loop because I can not use
     numpy or pandas.
 
     Args:
-        ts: A list of transactions.
+        tsc: A list of transactions, each transaction is also a list.
         mins: The mini-support. Integer.
+        items: A list contains all appeared items
     Returns:
         sups: A list which it's every element is the support of each transaction in trs list.
     """
-    print('Input: \n', ts)
+    print('Input: \n', tsc)
     print('Items: \n', items)
+    columns = len(items)
+    rows = len(tsc)
 
-    # build multi-hot matrix, this pre-processing can be easy if I can import other package like numpy, pandas
-    m = []
-    for t in ts:
-        # covert each transaction into an n-dim mask vector, in which 1 means the item exist while 0 is not
-        t_vect = []
-        for i in items:
-            if i in t:
-                t_vect.append(1)
-            else:
-                t_vect.append(0)
-        m.append(t_vect)
-    print('multi-hot matrix respect to input: \n', m)
+    # build mask matrix, this pre-processing can be simplified if I can import numpy or pandas
+    column_vectors = [[0]*rows for _ in range(columns)]  # new the initial full 0 mask matrix=[columns, rows]
+    for c, i in zip(range(columns), items):
+        for r, t in zip(range(rows), tsc):
+            if i in t:   # if the Item i is existing in Transaction t
+                column_vectors[c][r] = 1  # put 1 at [c, r] site of matrix
+    # m = []
+    # for t in tsc:
+    #     # covert each transaction into an n-dim mask vector, in which 1 means the item exist while 0 is not
+    #     t_vect = []
+    #     for i in items:
+    #         if i in t:
+    #             t_vect.append(1)
+    #         else:
+    #             t_vect.append(0)
+    #     m.append(t_vect)
+    #
+    # # get column vectors. == numpy.array(m)[:, idx]
+    # column_vect = [[row[c] for row in m] for c in range(columns)]
+    # del m
+    print('columns of matrix: \n', column_vectors)
 
-    # get column vectors
-    columns = [[row[column] for row in m] for column in range(len(items))]
-    print('columns of matrix: \n', columns)
+    # Calculation details !!!!!!!!!!!!!!!!!
+    # For 1-item subsets, just do addition in column dimension.
+    # The interest subsets are those whose sum(column vector)>mins.
+    output = {}  # dict for output
+    idx_1 = []  # list for index of interest single item.
+    for idx in range(columns):
+        if sum(column_vectors[idx]) >= mins:
+            idx_1.append(idx)
+            output[str(items[idx])] = sum(column_vectors[idx])
 
-    # calculation details that involve only matrix operator
-    # For 1-item subsets, the supports are:
-    sups_1 = [sum(c) for c in columns if sum(c) >= mins]  # matrix addition in column dimension
+    # for n-item subsets, combine the 1-item subsets, then do matrix multipy.
+    # The interest subsets are those subsets whose (sum of product of column vectors)>mins
+    # Here I do dot-product and addition by for loop since no numpy. The two operators can compose into matrix multipy.
+    for n in range(2, len(idx_1)+1):
+        for com in combinations(idx_1, n):
+            product = [1] * rows
+            for idx in com:
+                product = list(map(lambda x, y: x * y, product, column_vectors[idx]))  # dot-product
+            if sum(product) >= mins:  # addition
+                output[str(com)] = sum(product)
 
-    # for 2-item subset:
-
-
-    print(sups_1)
-    sups = []
-    return sups
+    print('results: ', output)
+    return output
 
 
 if __name__ == '__main__':
@@ -74,7 +96,7 @@ if __name__ == '__main__':
     min_sup = args.mins
 
     # Robustness checking
-    if min_sup < 0:
+    if min_sup <= 0:
         exit(' Illegal input of -mins option, must be positive.')
     if not os.path.isfile(in_txt):
         exit(' Can not find the -i pointed file.')
@@ -83,9 +105,9 @@ if __name__ == '__main__':
     if os.path.isfile(out_txt):
         exit(' The -o option pointed file is already exists.')
 
-    transactions = []
-    items = set()  # a set include all non-repeat item
     # Read transactions by lines from in_txt
+    transactions = []
+    items = set()  # a set include all non-repeat items
     try:
         with open(in_txt) as f:
             for line in f:
@@ -96,10 +118,12 @@ if __name__ == '__main__':
                     new_line.append(int(e))
                 transactions.append(new_line)
     except ValueError as e:
-        print(' Non-integer exist in -i option file.')
+        print(' Non-integer elements exist in -i option pointed file.')
+    items = list(items)
+    items.sort()
 
     # Calculation
-    supports = apriori(ts=transactions, mins=min_sup, items=items)
+    supports = apriori(tsc=transactions, mins=min_sup, items=items)
 
     # Write results into out_txt file
     # TODO
