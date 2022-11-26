@@ -83,8 +83,8 @@ if __name__ == '__main__':
         exit(' Illegal input of -mins option, must be positive.')
     if not os.path.isfile(in_txt):
         exit(' Can not find the -i pointed file.')
-    if not in_txt.endswith('.txt'):
-        exit(' Files pointed by -i m,must be txt file.')
+    if not in_txt.endswith('.txt') or not out_txt.endswith('.txt'):
+        exit(' Files pointed by -i and -o must be txt file.')
     if os.path.isfile(out_txt):
         exit(' The -o option pointed file is already exists.')
 
