@@ -105,3 +105,6 @@ Discussion:
 
  I am not sure if I can use numpy or pandas package here to make the coding convenient and easy to read. In my submitted
  version no extra package import, just Python3 standard library. Since this I have to write many for loop to do matrix operator.
+
+Online version:
+https://github.com/MeetXinZhang/HelloML/tree/master/apriori
