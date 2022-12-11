@@ -34,7 +34,7 @@ test_y = y[125:]
 from extreme_learning_machine.elm import ExtremeLearningMachine
 elm = ExtremeLearningMachine(in_features=5,  # 5 columns of x
                              out_features=3,  # 3 categories
-                             hidden_features=32)
+                             hidden_features=128)
 elm.train(train_x, train_y)  # training
 logits = elm.predict(test_x)  # prediction
 
