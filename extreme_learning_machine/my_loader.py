@@ -5,7 +5,7 @@
  @time: 2022/12/15 20:33
  @desc:
 """
-import numpy as np
+# Python basic library
 import csv
 
 # Define a dictionary to map string name in csv.

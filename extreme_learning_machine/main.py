@@ -1,4 +1,4 @@
-# Python standard libraries
+# Numpy is available
 import numpy as np
 # My python files
 from my_loader import iris, loan
