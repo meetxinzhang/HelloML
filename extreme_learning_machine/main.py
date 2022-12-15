@@ -1,53 +1,37 @@
 # Python standard libraries
 import numpy as np
-import csv
+# My python files
+from my_loader import iris, loan
+from extreme_learning_machine.elm import ExtremeLearningMachine  # read elm.py for more details
 
-# Define the dictionary from string name to one-hot.
-iris_onehot = {'Iris-setosa':     [1, 0, 0],
-               'Iris-versicolor': [0, 1, 0],
-               'Iris-virginica':  [0, 0, 1]}
-# Define the dictionary from num to one-hot.
-output_onehot = {0: [1, 0, 0],
-                 1: [0, 1, 0],
-                 2: [0, 0, 1]}
-
-
-def load_csv(path):
-    x = []
-    y = []
-    with open(path) as file:
-        for i, row in enumerate(csv.reader(file)):
-            if i == 0: continue  # skip the first row (columns name)
-            x.append([float(e) for e in row[:-1]])  # x, float, except the last column
-            y.append(iris_onehot[row[-1]])  # y, last column
-    return np.mat(x), np.mat(y)
-
-
-x, y = load_csv('Iris.csv')  # Iris Species dataset, https://www.kaggle.com/datasets/uciml/iris
-train_x = x[:125]  # the first 125 are for training
-train_y = y[:125]
-test_x = x[125:]  # the last 25 are for test. Num of test should << num of training since the
-test_y = y[125:]
+# x, y = iris('Iris.csv')  #  https://www.kaggle.com/datasets/uciml/iris
+x, y = loan('loan_data.csv')  # https://www.kaggle.com/datasets/urstrulyvikas/lending-club-loan-data-analysis
+train_x = x[:9000]  # the first 9000 lines for training
+train_y = y[:9000]
+test_x = x[9000:]  # lines except first 9000 for test. Num of test should << num of training
+test_y = y[9000:]
 print('x.shape:', x.shape, len(train_x), 'for training and', len(test_x), 'for test.')  # [batch, 5]
 
-from extreme_learning_machine.elm import ExtremeLearningMachine  # read elm.py for more details
-elm = ExtremeLearningMachine(in_features=5,  # 5 columns of x
-                             out_features=3,  # 3 categories
-                             hidden_features=64)
-elm.train(train_x, train_y)  # training
-logits = elm.predict(test_x)  # prediction
+# Training and test with a single-layer ELM demo.
+elm = ExtremeLearningMachine(in_features=13,  # 13 columns of x
+                             out_features=2,  # 2 categories
+                             hidden_features=64)  # hyperparameter
+elm.train(train_x, train_y)  # training  x:[batch, in_features=13], y:[batch,]
+logits = elm.predict(test_x)  # prediction  [batch, out_features=2]
 
-# get the results
-max_idx = np.argmax(logits, axis=1)  # find the index of max value for each sample
-_y_onehot = [output_onehot[int(i)] for i in max_idx]  # convert index into one-hot
+# Get the results
+output_onehot = {0: [1, 0],
+                 1: [0, 1]}
+max_idx = np.argmax(logits, axis=1)  # find the index of max value  [batch, out_features=2] -> [batch, 1]
+_y_onehot = [output_onehot[int(i)] for i in max_idx]  # convert index into one-hot -> [batch, 2]
 print('\nPrediction')
 print(_y_onehot)
 print('Label')
 print(np.array(test_y).tolist())
 
 # Evaluation
-_y_onehot = np.mat(_y_onehot)
-""" example to read following codes
+_y_onehot = np.mat(_y_onehot)  # convert list into matrix
+""" Example to calculate accuracy, if 3 categories
 Prediction
 [[0, 0, 1], [0, 0, 1], [0, 0, 1]
 Label
@@ -55,7 +39,7 @@ Label
 Hadamard product
 [[0, 0, 1], [0, 0, 0], [0, 0, 0]
 # Addition
-[1, 0, 0]
+[[1], [0], [0]]
 # Accuracy
 1/3=0.333333
 """
