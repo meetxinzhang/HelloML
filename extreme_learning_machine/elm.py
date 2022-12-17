@@ -30,9 +30,11 @@ class ExtremeLearningMachine:
         self.f = in_features  # num of columns/attributes
         self.o = out_features  # num of output dimension, default=1
         self.h = hidden_features  # num of hidden layer, default=64
+        self.param_c = 1
+        self.param_opt = True
 
         # random-features-mapping-layer, non-linear
-        self.weight = np.random.rand(self.f, self.h)  # extend the dimension of features into h by matrix multiply.
+        self.weight = np.random.rand(self.f, self.h)  # extend the dimension of input into h by matrix multiply.
         self.bias = np.random.rand(1, self.h)  # bias added with each sample.
 
         # learnable-layer: do prediction, linear, learnable.
@@ -52,10 +54,42 @@ class ExtremeLearningMachine:
         The idea of ELM is to let beat=features^-1*y, than you will see:
               features*beta = features*features^-1*y = I*y = y
         So, the key is to solve the inverse matrix of features (Moore-Penrose generalized inverse matrix).
+          Note: Moore-Penrose generalized inverse ensure the unique inverse exists for any m*n matrix.
         """
+        # Random-features-mapping-layer, or named hidden-layer in original paper.
         features = self.random_feature_mapping(x)  # [batch,f] -> [batch,h]
-        inverse = features.I  # find the inverse
-        self.beta = inverse * y  # [h, batch] * [batch,o] -> [h,o]
+
+        """
+        Easier way to find inverse by NumPy:
+            inverse = features.I  # find the inverse
+        So the beta is:
+            self.beta = inverse * y  # [h, batch] * [batch,o] -> [h,o]
+         
+        But I want to solve it by manual this time.
+        There are two ways:
+            1) Solve directly the linear matrix equation: beta=(HTH)^-1*HT*y -> HTH*beta=I*HT*y
+                         beta = np.linalg.solve(HTH, I*HT*y)
+            2) follows the formulation of Moore-Penrose generalized inverse
+                         the inverse of H = (HTH)^-1*HT
+        """
+        HT = features.T  # [h,batch]
+        # if self.param_opt:
+        #     self.beta = np.linalg.solve(
+        #         (np.eye(HT.shape[0]) / self.param_c) + HT * HT.conj().T,
+        #         HT * y)
+        # else:
+        #     self.beta = HT * np.linalg.solve(
+        #         ((np.eye(HT.shape[1]) / self.param_c) + HT.conj().T * HT), y)
+
+        HTH = HT * features  # [h,batch]*[batch,h] -> [h,h]
+        if np.linalg.det(HTH) == 0:
+            p = np.linalg.pinv(HTH)
+        else:
+            p = np.linalg.inv(HTH)
+        inverse = p * HT
+        # inverse = features.I  # find the inverse
+        # Update beta
+        self.beta = inverse * y  # beta = (HTH)^-1 * HT * y
 
     def predict(self, x):
         features = self.random_feature_mapping(x)

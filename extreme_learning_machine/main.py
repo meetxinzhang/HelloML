@@ -1,7 +1,7 @@
 # Numpy is available
 import numpy as np
 # My python files
-from my_loader import iris, loan
+from data_loader import iris, loan
 from extreme_learning_machine.elm import ExtremeLearningMachine  # read elm.py for more details
 
 # x, y = iris('Iris.csv')  #  https://www.kaggle.com/datasets/uciml/iris
