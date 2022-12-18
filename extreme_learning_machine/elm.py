@@ -30,12 +30,12 @@ class ExtremeLearningMachine:
         self.f = in_features  # num of columns/attributes
         self.o = out_features  # num of output dimension, default=1
         self.h = hidden_features  # num of hidden layer, default=64
-        self.param_opt = True
-        self.param_c = 1
+        # self.norm_rate = 1
 
         # random-features-mapping-layer, non-linear
         self.weight = np.random.rand(self.f, self.h)  # extend the dimension of input into h by matrix multiply.
         self.bias = np.random.rand(1, self.h)  # bias added with each sample.
+        self.p = None  # [h,h]
 
         # learnable-layer: do prediction, linear, learnable.
         self.beta = np.ones(shape=[self.h, self.o])
@@ -67,32 +67,46 @@ class ExtremeLearningMachine:
          
         But I want to solve it by manual this time.
         There are two ways:
-            1) Solve directly the linear matrix equation: beta=(HTH)^-1*HT*y -> HTH*beta=I*HT*y
-                         beta = np.linalg.solve(HTH, I*HT*y)
+            1) Solve directly the linear matrix equation: beta=(FTF)^-1*FT*y -> FTF*beta=I*FT*y
+                         beta = np.linalg.solve(FTF, I*FT*y)
             2) follows the formulation of Moore-Penrose generalized inverse
-                         the inverse of H = (HTH)^-1*HT
+                         the inverse of H = (FTF)^-1*FT
         """
-        HT = features.T  # [h,batch]
-        # if self.param_opt:
-        #     self.beta = np.linalg.solve(
-        #         (np.eye(HT.shape[0]) / self.param_c) + HT * HT.conj().T,
-        #         HT * y)
-        # else:
-        #     self.beta = HT * np.linalg.solve(
-        #         ((np.eye(HT.shape[1]) / self.param_c) + HT.conj().T * HT), y)
+        FT = features.T  # [h,batch]
+        # self.beta = np.linalg.solve(
+        #     (np.eye(FT.shape[0]) / self.norm_rate) + FT * FT.conj().T,
+        #     FT * y)
 
-        HTH = HT * features  # [h,batch]*[batch,h] -> [h,h]
-        # norm = np.eye(HTH.shape[0]) * self.param_c
-        # HTH = np.multiply(HTH, norm)
-        if np.linalg.det(HTH) == 0:
-            p = np.linalg.pinv(HTH)
+        FTF = FT * features  # [h,batch]*[batch,h] -> [h,h]
+        # norm = np.eye(FTF.shape[0]) * self.norm_rate  # Normalization
+        # FTF = np.multiply(FTF, norm)
+        if np.linalg.det(FTF) == 0:
+            self.p = np.linalg.pinv(FTF)
         else:
-            p = np.linalg.inv(HTH)
-        inverse = p * HT
-        # inverse = features.I  # find the inverse
+            self.p = np.linalg.inv(FTF)
+        inverse = self.p * FT
         # Update beta
-        self.beta = inverse * y  # beta = (HTH)^-1 * HT * y
+        self.beta = inverse * y  # beta = (FTF)^-1 * FT * y
+
+    def online_train(self, x, y):
+        """OS-ELM
+        """
+        b = x.shape[0]  # batch
+        features = self.random_feature_mapping(x)
+
+        FT = features.T  # [h,b]
+        I = np.eye(b)  # [b,b]
+        Fp = features * self.p  # [b,h]*[h,h] -> [b,h]
+        FpFT = Fp * FT  # [b,h] * [h,b] -> [b,b]
+        temp = np.linalg.inv(I + FpFT)
+        pFT = self.p * FT  # [h,h]*[h,b] -> [h,b]
+        self.p -= pFT * temp * Fp  # [h,h]-[h,b]*[b,b]*[b,h] -> [h,h]
+        
+        inverse = self.p * FT  # []
+        fea_beta = features * self.beta
+        self.beta += inverse * (y - fea_beta)
 
     def predict(self, x):
         features = self.random_feature_mapping(x)
         return features * self.beta  # [batch,h] * [h,o] -> [batch,o]
+

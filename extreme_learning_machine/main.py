@@ -55,3 +55,4 @@ if __name__ == '__main__':
     # Evaluation
     accuracy = evaluation(logits, test_y, classes=2)
     print('Accuracy: ', accuracy)
+
