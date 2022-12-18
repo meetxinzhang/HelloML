@@ -30,8 +30,8 @@ class ExtremeLearningMachine:
         self.f = in_features  # num of columns/attributes
         self.o = out_features  # num of output dimension, default=1
         self.h = hidden_features  # num of hidden layer, default=64
-        self.param_c = 1
         self.param_opt = True
+        self.param_c = 10000
 
         # random-features-mapping-layer, non-linear
         self.weight = np.random.rand(self.f, self.h)  # extend the dimension of input into h by matrix multiply.
@@ -82,6 +82,7 @@ class ExtremeLearningMachine:
         #         ((np.eye(HT.shape[1]) / self.param_c) + HT.conj().T * HT), y)
 
         HTH = HT * features  # [h,batch]*[batch,h] -> [h,h]
+        HTH += np.eye(HTH.shape[0]) / self.param_c
         if np.linalg.det(HTH) == 0:
             p = np.linalg.pinv(HTH)
         else:

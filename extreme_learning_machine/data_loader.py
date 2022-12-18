@@ -32,13 +32,17 @@ def loan(path):
             a = [float(e) for e in row[2:-1]]
             x.append([policy, purpose] + a)
             y.append(loan_onehot[row[-1]])  # y, last column
+    # shuffle the x and y at the same time
+    data = list(zip(x, y))
+    np.random.shuffle(data)
+    x[:], y[:] = zip(*data)
     return np.mat(x), np.mat(y)
 
 
 # Define a dictionary to map string name in csv.
-iris_onehot = {'Iris-setosa': [1, 0, 0],
+iris_onehot = {'Iris-setosa':     [1, 0, 0],
                'Iris-versicolor': [0, 1, 0],
-               'Iris-virginica': [0, 0, 1]}
+               'Iris-virginica':  [0, 0, 1]}
 
 
 def iris(path):
@@ -49,4 +53,8 @@ def iris(path):
             if i == 0: continue  # skip the first row (columns name)
             x.append([float(e) for e in row[:-1]])  # x, float, except the last column
             y.append(iris_onehot[row[-1]])  # y, last column
+    # shuffle the x and y at the same time
+    data = list(zip(x, y))
+    np.random.shuffle(data)
+    x[:], y[:] = zip(*data)
     return np.mat(x), np.mat(y)
