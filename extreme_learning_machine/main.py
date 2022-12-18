@@ -41,7 +41,7 @@ if __name__ == '__main__':
     #                  2: [0, 0, 1]}
 
     # loan dataset https://www.kaggle.com/datasets/urstrulyvikas/lending-club-loan-data-analysis
-    train_x, train_y, test_x, test_y = loan('loan_data.csv', divide=0.7)
+    train_x, train_y, test_x, test_y = loan('loan.csv', divide=0.7)
     output_onehot = {0: [1, 0],
                      1: [0, 1]}
 
