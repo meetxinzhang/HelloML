@@ -1,5 +1,7 @@
 # Numpy is available
 import numpy as np
+# Python basic library
+import time
 # My python files
 from data_loader import iris, loan
 from extreme_learning_machine.elm import ExtremeLearningMachine  # read elm.py for more details
@@ -49,10 +51,20 @@ if __name__ == '__main__':
     elm = ExtremeLearningMachine(in_features=13,  # Columns of x. Loan: 13  Iris: 5
                                  out_features=2,  # Categories.  Loan: 2   Iris: 3
                                  hidden_features=128)  # hyperparameter
+    T1 = time.time()
     elm.train(train_x, train_y)  # training  x:[batch, in_features=13], y:[batch,]
-    logits = elm.predict(test_x)  # prediction  [batch, out_features=2]
+    T2 = time.time()
+    print('\nTraining takes ', ((T2 - T1) * 1000), ' ms')
 
     # Evaluation
+    logits = elm.predict(test_x)  # prediction  [batch, out_features=2]
     accuracy = evaluation(logits, test_y, classes=2)
     print('Accuracy: ', accuracy)
+
+    elm.online_train(test_x, test_y)
+    # Evaluation
+    logits = elm.predict(test_x)  # prediction  [batch, out_features=2]
+    accuracy = evaluation(logits, test_y, classes=2)
+    print('Accuracy: ', accuracy)
+
 

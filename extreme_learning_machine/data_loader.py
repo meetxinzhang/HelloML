@@ -40,7 +40,7 @@ def divide_train_test(x, y, divide=0.7):
     train_y = y[:train_num]
     test_x = x[train_num:]  # lines except first 9000 for test. Num of test should << num of training
     test_y = y[train_num:]
-    print('x.shape:', len(x), ', ', len(train_x), 'for training and', len(test_x), 'for test.')  # [batch, 5]
+    print('dataset size:', len(x), ', ', len(train_x), 'for training and', len(test_x), 'for test.')  # [batch, 5]
     return np.mat(train_x), np.mat(train_y), np.mat(test_x), np.mat(test_y)
 
 
