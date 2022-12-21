@@ -100,7 +100,6 @@ class ExtremeLearningMachine:
         """
         ft = features.T  # [h,b]
         ftf = np.matmul(ft, features)  # [h,b]*[b,h] -> [h,h], use for the Orthogonal project.
-
         if np.linalg.det(ftf) != 0:  # non-singular
             print('Non-singular matrix, use 1) The Orthogonal project.')
             # norm = np.eye(ftf.shape[0]) * self.norm_rate
